@@ -2,7 +2,7 @@ using DG.Tweening;
 using I2.Loc;
 using UnityEngine;
 
-namespace Omega.Kulibin
+namespace MaxFluff.Prototypes
 {
     public sealed class LoadingWindowView : WindowViewBase
     {

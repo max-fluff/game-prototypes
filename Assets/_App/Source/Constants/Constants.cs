@@ -3,7 +3,7 @@ using UnityEngine;
 
 // ReSharper disable CommentTypo
 
-namespace Omega.Kulibin
+namespace MaxFluff.Prototypes
 {
     public sealed class Constants
     {

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Omega.Kulibin
+namespace MaxFluff.Prototypes
 {
     [CreateAssetMenu(fileName = FILE_NAME, menuName = "Config/UnityConfigs", order = 0)]
     public sealed class UnityConfigs : ScriptableObject

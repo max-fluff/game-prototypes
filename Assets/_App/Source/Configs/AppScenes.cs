@@ -1,7 +1,7 @@
 using Eflatun.SceneReference;
 using UnityEngine;
 
-namespace Omega.Kulibin
+namespace MaxFluff.Prototypes
 {
     [CreateAssetMenu(fileName = "AppScenes", menuName = "Config/AppScenes", order = 0)]
     public sealed class AppScenes : ScriptableObject

@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace Omega.Kulibin
+namespace MaxFluff.Prototypes
 {
     public sealed class RaycastView : ViewBase
     {

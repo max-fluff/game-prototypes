@@ -2,7 +2,7 @@ using System;
 using Cysharp.Threading.Tasks;
 using Omega.IoC;
 
-namespace Omega.Kulibin
+namespace MaxFluff.Prototypes
 {
     public abstract class AppStateBase<TContext> : IAppState where TContext : SceneContextBase
     {

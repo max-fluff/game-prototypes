@@ -1,7 +1,7 @@
 ﻿using System;
 using Cysharp.Threading.Tasks;
 
-namespace Omega.Kulibin
+namespace MaxFluff.Prototypes
 {
     public interface IAsyncState<in TSubject> where TSubject : IStateSubject
     {

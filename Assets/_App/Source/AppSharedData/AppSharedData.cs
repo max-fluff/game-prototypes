@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Omega.Kulibin
+namespace MaxFluff.Prototypes
 {
     public sealed class AppSharedData
     {

@@ -1,7 +1,7 @@
 using System;
 using Cysharp.Threading.Tasks;
 
-namespace Omega.Kulibin
+namespace MaxFluff.Prototypes
 {
     public sealed class EmptyState : IAppState
     {

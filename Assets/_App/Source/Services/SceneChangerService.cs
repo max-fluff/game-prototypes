@@ -2,7 +2,7 @@ using Cysharp.Threading.Tasks;
 using Eflatun.SceneReference;
 using UnityEngine.SceneManagement;
 
-namespace Omega.Kulibin
+namespace MaxFluff.Prototypes
 {
     public sealed class SceneChangerService
     {

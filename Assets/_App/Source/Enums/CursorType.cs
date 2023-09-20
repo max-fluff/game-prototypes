@@ -1,4 +1,4 @@
-namespace Omega.Kulibin
+namespace MaxFluff.Prototypes
 {
     public enum CursorType
     {

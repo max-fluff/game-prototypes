@@ -2,7 +2,7 @@ using System;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-namespace Omega.Kulibin
+namespace MaxFluff.Prototypes
 {
     public sealed class StateMachine<TSubject> where TSubject : IStateSubject
     {

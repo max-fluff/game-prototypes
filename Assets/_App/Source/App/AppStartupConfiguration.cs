@@ -1,7 +1,7 @@
 using System;
 using Newtonsoft.Json;
 
-namespace Omega.Kulibin
+namespace MaxFluff.Prototypes
 {
     /// <summary>
     /// Параметры определяющие поведение приложения на момент запуска

@@ -2,7 +2,7 @@ using System.IO;
 using Newtonsoft.Json;
 using UnityEngine;
 
-namespace Omega.Kulibin
+namespace MaxFluff.Prototypes
 {
     public static class AppStartupConfigurationProvider
     {

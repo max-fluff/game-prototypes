@@ -4,7 +4,7 @@ using Cysharp.Threading.Tasks;
 using Lean.Gui;
 using UnityEngine;
 
-namespace Omega.Kulibin
+namespace MaxFluff.Prototypes
 {
     public abstract class WindowViewBase : TransformView
     {

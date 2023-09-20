@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Omega.Kulibin
+namespace MaxFluff.Prototypes
 {
     [CreateAssetMenu(fileName = "CursorsConfig", menuName = "Config/Cursors", order = 0)]
     public sealed class CursorsConfig : ScriptableObject

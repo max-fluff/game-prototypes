@@ -2,7 +2,7 @@
 using Lean.Gui;
 using UnityEngine;
 
-namespace Omega.Kulibin
+namespace MaxFluff.Prototypes
 {
     public abstract class ButtonBaseView : ViewBase
     {

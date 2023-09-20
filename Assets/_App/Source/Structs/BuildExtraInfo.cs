@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Omega.Kulibin
+namespace MaxFluff.Prototypes
 {
     [Serializable]
     public struct BuildExtraInfo

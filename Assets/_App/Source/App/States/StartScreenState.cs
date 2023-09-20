@@ -2,7 +2,7 @@ using Cysharp.Threading.Tasks;
 using Omega.IoC;
 using UnityEngine;
 
-namespace Omega.Kulibin
+namespace MaxFluff.Prototypes
 {
     public sealed class StartScreenState : AppStateBase<StartScreenContext>
     {

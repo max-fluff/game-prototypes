@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Omega.Kulibin
+namespace MaxFluff.Prototypes
 {
     [Serializable]
     public sealed class UIContext

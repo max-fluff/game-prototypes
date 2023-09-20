@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Omega.Kulibin
+namespace MaxFluff.Prototypes
 {
     public sealed class StartScreenView : ViewBase
     {

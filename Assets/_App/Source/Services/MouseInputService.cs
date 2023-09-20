@@ -2,7 +2,7 @@ using System.Linq;
 using Lean.Touch;
 using UnityEngine;
 
-namespace Omega.Kulibin
+namespace MaxFluff.Prototypes
 {
     public sealed class MouseInputService
     {

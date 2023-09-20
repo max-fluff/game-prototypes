@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using Cysharp.Threading.Tasks;
 
-namespace Omega.Kulibin
+namespace MaxFluff.Prototypes
 {
     public abstract class RunnableService
     {

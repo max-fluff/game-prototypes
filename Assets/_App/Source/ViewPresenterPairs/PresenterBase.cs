@@ -1,7 +1,7 @@
 using System;
 using Object = UnityEngine.Object;
 
-namespace Omega.Kulibin
+namespace MaxFluff.Prototypes
 {
     public abstract class PresenterBase<T> where T : ViewBase
     {

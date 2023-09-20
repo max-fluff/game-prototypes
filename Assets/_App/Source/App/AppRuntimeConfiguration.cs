@@ -2,7 +2,7 @@
 using Newtonsoft.Json;
 using UnityEngine.Serialization;
 
-namespace Omega.Kulibin
+namespace MaxFluff.Prototypes
 {
     /// <summary>
     /// Параметры определяющие поведение приложения во время выполнения

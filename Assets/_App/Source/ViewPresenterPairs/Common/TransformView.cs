@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Omega.Kulibin
+namespace MaxFluff.Prototypes
 {
     public class TransformView : ViewBase
     {

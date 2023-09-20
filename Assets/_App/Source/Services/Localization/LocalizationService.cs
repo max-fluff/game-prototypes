@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using I2.Loc;
 
-namespace Omega.Kulibin
+namespace MaxFluff.Prototypes
 {
     public class LocalizationService
     {

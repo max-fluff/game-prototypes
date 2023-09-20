@@ -3,7 +3,7 @@ using Lean.Gui;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace Omega.Kulibin
+namespace MaxFluff.Prototypes
 {
     public class WindowsOrganizerView : ViewBase
     {

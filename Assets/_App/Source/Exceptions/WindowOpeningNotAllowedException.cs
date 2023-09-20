@@ -1,6 +1,6 @@
 using System;
 
-namespace Omega.Kulibin
+namespace MaxFluff.Prototypes
 {
     public class WindowOpeningNotAllowedException : Exception
     {

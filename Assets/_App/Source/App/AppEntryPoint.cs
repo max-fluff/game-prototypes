@@ -7,7 +7,7 @@ using Omega.Lib.Text;
 using Omega.RemoteConfig;
 using UnityEngine;
 
-namespace Omega.Kulibin
+namespace MaxFluff.Prototypes
 {
     public static class AppEntryPoint
     {
