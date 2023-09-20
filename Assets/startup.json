@@ -1,0 +1,31 @@
+{
+  "RemoteConfigEnabled": true,
+  "RemoteConfigServerUrl": "https://v1.api.remote-config.jet-omega.com",
+  "RemoteConfigStateId": "0e78f6f8-6478-47a2-b979-621699f96a74",
+  "RemoteConfigPullTimeoutMilliseconds": 1000,
+  "GoogleSpreadsheetKeyForBuild": "1LvrZg33u_e3PpcFlRQjIJFwvlFceODDmk3758aF-VTU",
+  "DeveloperMode": false,
+  "DefaultRuntimeConfiguration": {
+    "UpdateServiceEnabled": true,
+    "UpdateServerUrl": "https://updates.api.kulibin.app",
+    "UpdateServiceBranch": "general_win-x86-64",
+    "LimitFps": 60,
+    "AnalyticsServiceEnabled": true,
+    "ForceRequireUpdate": false,
+    "EnableFeaturePreviewPolygonSelector": false,
+    "AnalyticsApiKey": "018e02a0987599f2a50b0b7fa4b029e6",
+    "EnableFeatureCopyAsImage": true,
+    "CommunityTelegramLink": "https://link.kulibin.app/mBAsKg",
+    "UpdatesTelegramLink": "https://link.kulibin.app/MIBnSQ",
+    "OmegaBotSiteUrl": "https://omegabot.ru",
+    "AuthorizationEnabled": true,
+    "AuthorizationServerUrl": "https://api.kulibin.app",
+    "RegistrationUrl": "https://account.kulibin.app/auth/register",
+    "PasswordResetUrl": "https://account.kulibin.app/auth/passwordReset",
+    "ContestsFeatureEnabled": true,
+    "ContestId": "1c00dbdf-1cbc-4098-a657-b1cb75a3e5bf",
+    "RegistrationOnContestUrl": "https://kulibin.app/competition",
+    "ContestAdWindowEnabled": true,
+    "AllowSendingForStanding": false
+  }
+}

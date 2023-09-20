@@ -1,0 +1,44 @@
+<MsiWrapper>
+  <Installer>
+    <IconFile Detect="" Value="C:\Users\davs\Downloads\Installer Icon (1).ico" />
+    <Output FileName="E:\omegabot-ide\Builds\1.6.0.1298_win-x86-64+signed.msi" />
+    <InstallPrivileges Value="Elevated" />
+    <PerUser Value="auto" />
+    <ElevateExecutable Value="administrators" />
+    <UpgradeCode Value="{5FB229CE-D348-4D76-BC6B-D95D17D999C6}" />
+    <ProductId Value="" />
+    <Platform Value="x64" />
+    <Registration Value="Visible" />
+    <RegistrationWrapped Value="Hidden" />
+    <Manufacturer Detect="" Value="Omega LLC" />
+    <ProductVersion Detect="executable" Value="1.6.0.0" />
+    <ProductName Detect="" Value="Kulibin" />
+    <Comments Detect="executable" Value="This installation was built with Inno Setup." />
+    <Contact Detect="" Value="https://kulibin.app/" />
+    <HelpLink Detect="" Value="https://kulibin.app/" />
+    <UpdateLink Detect="" Value="https://kulibin.app/" />
+    <AboutLink Detect="" Value="https://kulibin.app/" />
+  </Installer>
+  <WrappedInstaller>
+    <Executable FileName="E:\omegabot-ide\Builds\1.6.0.1298_win-x86-64+signed.exe" SuccessCodes="" Impersonate="yes" IncludeFiles="no" CompressionLevel="None" />
+    <ApplicationId Value="{CD337BAE-FF9A-4A02-9AE7-FD23C6DA206F}_is1" />
+    <Install>
+      <Arguments Value=" /VERYSILENT  /SUPPRESSMSGBOXES">
+        <UILevelNone Value="" />
+        <UILevelBasic Value="" />
+        <UILevelReduced Value="" />
+        <UILevelFull Value="" />
+      </Arguments>
+      <RunBeforeInstall Value="" />
+      <RunAfterInstall Value="" />
+    </Install>
+    <Uninstall>
+      <Arguments Value=" /VERYSILENT  /SUPPRESSMSGBOXES">
+        <UILevelNone Value="" />
+        <UILevelBasic Value="" />
+        <UILevelReduced Value="" />
+        <UILevelFull Value="" />
+      </Arguments>
+    </Uninstall>
+  </WrappedInstaller>
+</MsiWrapper>
