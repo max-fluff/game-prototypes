@@ -1,4 +1,3 @@
-using System.Linq;
 using Omega.IoC;
 using UnityEngine;
 
@@ -38,7 +37,6 @@ namespace Omega.Kulibin
             {
                 c.AddSingleton(unityConfigs.Cursors);
                 c.AddSingleton(unityConfigs.AppScenes);
-                c.AddSingleton(unityConfigs.Environments);
 
                 c.AddSingleton(RuntimeConfiguration);
 
@@ -67,15 +65,13 @@ namespace Omega.Kulibin
 
         private void InitState()
         {
-            // Для разработки, чтоб можно было запускать программу с любой сцены
             if (Application.isEditor)
             {
                 var context = Object.FindObjectOfType<SceneContextBase>();
                 _stateMachine.Launch(context switch
                 {
                     StartScreenContext _ => new StartScreenState(),
-                    WorkspaceContext _ => new WorkspaceState(),
-                    _ => InitStateFromEnvironment()
+                    WorkspaceContext _ => new WorkspaceState()
                 });
             }
             else
@@ -84,27 +80,6 @@ namespace Omega.Kulibin
             }
         }
 
-        private IAppState InitStateFromEnvironment()
-        {
-            var environmentContext = Object.FindObjectOfType<EnvironmentView>();
-
-            if (environmentContext == null)
-                return new EmptyState();
-
-            if (Services.Resolve<Environments>().AllEnvironments.Any(env =>
-                    env.Name == environmentContext.gameObject.scene.name))
-            {
-                Services.Resolve<AppSharedData>().Add(new EnvironmentSceneName
-                {
-                    Value = environmentContext.gameObject.scene.name
-                });
-                return new WorkspaceState();
-            }
-
-            Debug.LogError("The current scene is not added to EnvironmentScenes");
-            return new EmptyState();
-        }
-        
         public void Run()
         {
             _stateMachine.Run();

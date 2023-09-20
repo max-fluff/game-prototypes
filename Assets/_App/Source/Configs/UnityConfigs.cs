@@ -8,7 +8,6 @@ namespace Omega.Kulibin
         private const string FILE_NAME = "UnityConfigs";
         
         public AppScenes AppScenes;
-        public Environments Environments;
         public CursorsConfig Cursors;
 
         public static UnityConfigs Load()
