@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace MaxFluff.Prototypes
 {
-    public sealed class WorkspaceContext : SceneContextBase
+    public sealed class GameContext : SceneContextBase
     {
         [Header("Workspace")]
         public CameraView UICamera;

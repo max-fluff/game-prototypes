@@ -8,7 +8,6 @@ namespace MaxFluff.Prototypes
     {
         public SceneReference EmptyScene;
         public SceneReference StartScreen;
-        public SceneReference Workspace;
-        public SceneReference Constructor;
+        public SceneReference Game;
     }
 }

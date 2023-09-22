@@ -9,6 +9,7 @@ namespace MaxFluff.Prototypes
         
         public AppScenes AppScenes;
         public CursorsConfig Cursors;
+        public GamesList Games;
 
         public static UnityConfigs Load()
         {

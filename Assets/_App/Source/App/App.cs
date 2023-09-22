@@ -37,6 +37,7 @@ namespace MaxFluff.Prototypes
             {
                 c.AddSingleton(unityConfigs.Cursors);
                 c.AddSingleton(unityConfigs.AppScenes);
+                c.AddSingleton(unityConfigs.Games);
 
                 c.AddSingleton(RuntimeConfiguration);
 
@@ -71,7 +72,7 @@ namespace MaxFluff.Prototypes
                 _stateMachine.Launch(context switch
                 {
                     StartScreenContext _ => new StartScreenState(),
-                    WorkspaceContext _ => new WorkspaceState()
+                    GameContext _ => new GameState()
                 });
             }
             else

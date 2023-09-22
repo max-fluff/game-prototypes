@@ -8,7 +8,6 @@ namespace MaxFluff.Prototypes
     {
         [Header("Windows")]
         public WindowsOrganizerView WindowsOrganizer;
-        public SettingsWindowView SettingsWindow;
         public LoadingWindowView LoadingWindow;
     }
 }

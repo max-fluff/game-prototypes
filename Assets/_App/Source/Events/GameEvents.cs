@@ -2,7 +2,7 @@
 
 namespace MaxFluff.Prototypes
 {
-    public sealed class StartScreenEvents
+    public sealed class GameEvents
     {
     }
 }

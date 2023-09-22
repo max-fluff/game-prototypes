@@ -24,33 +24,30 @@ namespace MaxFluff.Prototypes
                 c.AddSingleton(_context.WindowsOrganizer);
                 c.AddSingleton(_context.LoadingWindow);
                 c.AddSingleton(_context.RaycastView);
-                
+                c.AddSingleton(_context.GamesListView);
+
                 c.AddSingleton<StartScreenEvents>();
 
                 c.AddSingleton<StartScreenPresenter>();
                 c.AddSingleton<RaycastPresenter>();
-                
+                c.AddSingleton<GamesListPresenter>();
+
                 c.AddSingleton<WindowsOrganizerPresenter>();
                 c.AddSingleton<LoadingWindowPresenter>();
 
                 c.AddSingleton<WindowsInputBinding>();
-                c.AddSingleton<EnterPolygonBinding>();
-                c.AddSingleton<StartScreenLanguageBinding>();
+                c.AddSingleton<EnterGameBinding>();
                 c.AddSingleton<StartScreenWindowsBinding>();
+                c.AddSingleton<StartScreenQuitBinding>();
             });
-            
+
             _core = new AppCore();
             _core.OnStateChangeRequested += RequestStateChange;
             _core.Add(_container.Resolve<WindowsInputBinding>())
-                .Add(_container.Resolve<EnterPolygonBinding>())
-                .Add(_container.Resolve<StartScreenLanguageBinding>())
-                .Add(_container.Resolve<StartScreenWindowsBinding>());
+                .Add(_container.Resolve<EnterGameBinding>())
+                .Add(_container.Resolve<StartScreenWindowsBinding>())
+                .Add(_container.Resolve<StartScreenQuitBinding>());
             _core.Init();
-        }
-
-        public override async UniTask Run(App app)
-        {
-            _core.Run();
         }
     }
 }

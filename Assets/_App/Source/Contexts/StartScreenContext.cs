@@ -8,6 +8,7 @@ namespace MaxFluff.Prototypes
         public StartScreenView StartScreen;
         public WindowsOrganizerView WindowsOrganizer;
         public RaycastView RaycastView;
+        public GamesListView GamesListView;
         
         [Header("Windows")]
         public LoadingWindowView LoadingWindow;
