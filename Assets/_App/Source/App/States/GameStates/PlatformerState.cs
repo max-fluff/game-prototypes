@@ -1,30 +1,18 @@
-using Cysharp.Threading.Tasks;
+﻿using Cysharp.Threading.Tasks;
 using Omega.IoC;
-using Object = UnityEngine.Object;
 
-namespace MaxFluff.Prototypes
+namespace MaxFluff.Prototypes.GameStates
 {
-    public abstract class GameState : AppStateBase<GameContext>
+    public class PlatformerState: GameState
     {
         private SceneChangerService _sceneChanger;
-        protected AppScenes AppScenes;
 
-        protected abstract string RequiredSceneName
-        {
-            get;
-        }
-
-        protected override async UniTask InitContext(App app)
-        {
-            AppScenes = app.Services.Resolve<AppScenes>();
-            while ((_context = Object.FindObjectOfType<GameContext>()) == null)
-            { ;
-                await app.Services.Resolve<SceneChangerService>().SwitchToScene(RequiredSceneName);
-            }
-        }
+        protected override string RequiredSceneName => AppScenes.PlatformerScene.Name;
 
         protected override void InitState(App app)
         {
+            base.InitState(app);
+            /*
             _container = app.Services.ConfigureScoped(c =>
             {
                 c.AddSingleton(_context.UICamera);
@@ -45,17 +33,11 @@ namespace MaxFluff.Prototypes
                 c.AddSingleton<GameWindowsBinding>();
             });
 
-            _core = new AppCore();
-            _core.OnStateChangeRequested += RequestStateChange;
-
             _core.Add(_container.Resolve<WindowsInputBinding>())
+                .Add(_container.Resolve<SettingsBinding>())
                 .Add(_container.Resolve<GameWindowsBinding>());
-        }
 
-        public override async UniTask Destroy(App app)
-        {
-            _core.Destroy();
-            await _sceneChanger.UnloadSceneAsync(RequiredSceneName);
+            _core.Init();*/
         }
     }
 }

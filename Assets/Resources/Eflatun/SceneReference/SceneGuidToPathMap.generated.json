@@ -1,6 +1,7 @@
 {
   "4b3f54cc2c521b2418e34c2f73f1d0d8": "Assets/_App/Scenes/EmptyScene.unity",
   "66a3baf8f68ca464bbaf302065cfacca": "Assets/_App/Scenes/Game.unity",
+  "76644aec78eb5264bacb1e551b4ecbf8": "Assets/_App/Scenes/Games/Platformer.unity",
   "43e1570e496f9994484f24aaac82c274": "Assets/_App/Scenes/StartScreen.unity",
   "627f04d1fd48ef845af1cb621b9fbbb3": "Assets/Third-Party/Lean/GUI/Examples/01 Button.unity",
   "d8711a4a42c067e43bf1063b8de4df23": "Assets/Third-Party/Lean/GUI/Examples/02 Toggle.unity",

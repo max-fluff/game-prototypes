@@ -8,6 +8,6 @@ namespace MaxFluff.Prototypes
     {
         public SceneReference EmptyScene;
         public SceneReference StartScreen;
-        public SceneReference Game;
+        public SceneReference PlatformerScene;
     }
 }

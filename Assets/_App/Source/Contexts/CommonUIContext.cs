@@ -4,7 +4,7 @@ using UnityEngine;
 namespace MaxFluff.Prototypes
 {
     [Serializable]
-    public sealed class UIContext
+    public sealed class CommonUIContext
     {
         [Header("Windows")]
         public WindowsOrganizerView WindowsOrganizer;

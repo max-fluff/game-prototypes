@@ -7,6 +7,6 @@ namespace MaxFluff.Prototypes
         [Header("Workspace")]
         public CameraView UICamera;
         public RaycastView RaycastView;
-        public UIContext UI;
+        public CommonUIContext UI;
     }
 }
