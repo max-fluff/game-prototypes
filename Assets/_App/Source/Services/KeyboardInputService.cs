@@ -9,7 +9,7 @@ namespace MaxFluff.Prototypes
     {
         public event Action<Actions> OnInputAction;
 
-        public bool IsKeyDown(KeyCode key) => 
+        public bool IsKeyDown(KeyCode key) =>
             Input.GetKeyDown(key);
 
         protected override async UniTask Run(CancellationToken cancellationToken)
@@ -19,12 +19,7 @@ namespace MaxFluff.Prototypes
                 if (cancellationToken.IsCancellationRequested)
                     return;
 
-                Actions action;
-
-                if (Input.GetKey(KeyCode.LeftControl))
-                    action = ProcessCtrlHotkeys();
-                else
-                    action = ProcessHotkeys();
+                var action = ProcessHotkeys();
 
                 if (action != Actions.None)
                     OnInputAction?.Invoke(action);
@@ -32,45 +27,26 @@ namespace MaxFluff.Prototypes
                 await UniTask.Yield(PlayerLoopTiming.PreUpdate);
             }
         }
-        
+
         private static Actions ProcessHotkeys()
         {
             if (Input.GetKeyDown(KeyCode.Space))
                 return Actions.Space;
 
-            return Actions.None;
-        }
+            if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
+                return Actions.Left;
 
-        private static Actions ProcessCtrlHotkeys()
-        {
-            if (Input.GetKeyDown(KeyCode.Z))
-                return Actions.CtrlZ;
+            if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
+                return Actions.Right;
 
-            if (Input.GetKeyDown(KeyCode.Y))
-                return Actions.CtrlY;
-            
-            if (Input.GetKey(KeyCode.LeftShift))
-                return ProcessCtrlShiftHotkeys();
-            
-            if (Input.GetKeyDown(KeyCode.O))
-                return Actions.CtrlO;
-            
-            if (Input.GetKeyDown(KeyCode.S))
-                return Actions.CtrlS;
-            
-            if (Input.GetKeyDown(KeyCode.N))
-                return Actions.CtrlN;
+            if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))
+                return Actions.Up;
 
-            return Actions.None;
-        }
-        
-        private static Actions ProcessCtrlShiftHotkeys()
-        {
-            if (Input.GetKeyDown(KeyCode.O))
-                return Actions.CtrlShiftO;
-            
-            if (Input.GetKeyDown(KeyCode.S))
-                return Actions.CtrlShiftS;
+            if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow))
+                return Actions.Down;
+
+            if (Input.GetKeyDown(KeyCode.Escape))
+                return Actions.Esc;
 
             return Actions.None;
         }
@@ -78,14 +54,12 @@ namespace MaxFluff.Prototypes
 
     public enum Actions
     {
-        CtrlZ,
-        CtrlY,
+        Left,
+        Right,
+        Up,
+        Down,
         Space,
-        CtrlO,
-        CtrlS,
-        CtrlN,
-        CtrlShiftO,
-        CtrlShiftS,
+        Esc,
         None
     }
 }

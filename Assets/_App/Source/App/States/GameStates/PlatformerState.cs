@@ -1,12 +1,11 @@
 ﻿using Cysharp.Threading.Tasks;
+using MaxFluff.Prototypes.Games;
 using Omega.IoC;
 
-namespace MaxFluff.Prototypes.GameStates
+namespace MaxFluff.Prototypes
 {
-    public class PlatformerState: GameState
+    public class PlatformerState : GameState<PlatformerContext>
     {
-        private SceneChangerService _sceneChanger;
-
         protected override string RequiredSceneName => AppScenes.PlatformerScene.Name;
 
         protected override void InitState(App app)
@@ -36,8 +35,8 @@ namespace MaxFluff.Prototypes.GameStates
             _core.Add(_container.Resolve<WindowsInputBinding>())
                 .Add(_container.Resolve<SettingsBinding>())
                 .Add(_container.Resolve<GameWindowsBinding>());
-
-            _core.Init();*/
+            */
+            _core.Init();
         }
     }
 }
