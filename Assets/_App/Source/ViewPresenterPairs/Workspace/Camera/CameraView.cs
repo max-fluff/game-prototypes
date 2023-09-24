@@ -2,7 +2,7 @@
 
 namespace MaxFluff.Prototypes
 {
-    public class CameraView : ViewBase
+    public class CameraView : TransformView
     {
         public Camera Camera;
     }
@@ -12,7 +12,7 @@ namespace MaxFluff.Prototypes
         public Camera Camera { get; }
     }
 
-    public class CameraPresenter<TView> : PresenterBase<TView>, ICameraPresenter where TView : CameraView
+    public class CameraPresenter<TView> : TransformPresenter<TView>, ICameraPresenter where TView : CameraView
     {
         public CameraPresenter(TView view) : base(view)
         {

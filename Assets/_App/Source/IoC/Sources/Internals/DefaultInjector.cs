@@ -61,7 +61,7 @@ namespace Omega.IoC
                 map.Add(type, entry = CreateEntry(type));
 
             if (!entry.CanBeInject)
-                throw new InvalidOperationException("TODO");
+                throw new InvalidOperationException(entry.RejectInjectionReason.ToString());
 
             return entry.ConstructorParameters;
         }

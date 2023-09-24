@@ -12,6 +12,16 @@ namespace MaxFluff.Prototypes
         public bool IsKeyDown(KeyCode key) =>
             Input.GetKeyDown(key);
 
+        public bool IsActionDown(Actions key) =>
+            key switch
+            {
+                Actions.Left => Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow),
+                Actions.Right => Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow),
+                Actions.Up => Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow),
+                Actions.Down => Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow),
+                _ => false
+            };
+
         protected override async UniTask Run(CancellationToken cancellationToken)
         {
             while (true)
@@ -44,6 +54,15 @@ namespace MaxFluff.Prototypes
 
             if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow))
                 return Actions.Down;
+            
+            if (Input.GetKeyDown(KeyCode.Alpha1))
+                return Actions.Selection1;
+            
+            if (Input.GetKeyDown(KeyCode.Alpha2))
+                return Actions.Selection2;
+            
+            if (Input.GetKeyDown(KeyCode.Alpha3))
+                return Actions.Selection3;
 
             if (Input.GetKeyDown(KeyCode.Escape))
                 return Actions.Esc;
@@ -60,6 +79,9 @@ namespace MaxFluff.Prototypes
         Down,
         Space,
         Esc,
+        Selection1,
+        Selection2,
+        Selection3,
         None
     }
 }

@@ -72,7 +72,7 @@ namespace MaxFluff.Prototypes
                 _stateMachine.Launch(context switch
                 {
                     StartScreenContext _ => new StartScreenState(),
-                    //GameContext _ => new GameState()
+                    PlatformerContext _ => new PlatformerState()
                 });
             }
             else

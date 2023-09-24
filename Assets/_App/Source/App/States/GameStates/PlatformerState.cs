@@ -1,6 +1,4 @@
-﻿using Cysharp.Threading.Tasks;
-using MaxFluff.Prototypes.Games;
-using Omega.IoC;
+﻿using Omega.IoC;
 
 namespace MaxFluff.Prototypes
 {
@@ -11,31 +9,22 @@ namespace MaxFluff.Prototypes
         protected override void InitState(App app)
         {
             base.InitState(app);
-            /*
-            _container = app.Services.ConfigureScoped(c =>
+
+            _container = _container.ConfigureScoped(c =>
             {
-                c.AddSingleton(_context.UICamera);
-                c.AddSingleton(_context.RaycastView);
+                c.AddSingleton(_context.PlayerView);
+                c.AddSingleton(_context.MainCameraView);
 
-                c.AddSingleton(_context.UI.WindowsOrganizer);
-                c.AddSingleton(_context.UI.LoadingWindow);
+                c.AddSingleton<PlatformerPlayerPresenter>();
+                c.AddSingleton<CameraPresenter>();
 
-                c.AddSingleton<GameEvents>();
-
-                c.AddSingleton<WindowsOrganizerPresenter>();
-                c.AddSingleton<LoadingWindowPresenter>();
-
-                c.AddSingleton<ICameraPresenter, CameraPresenter>("UICamera");
-                c.AddSingleton<RaycastPresenter>();
-
-                c.AddSingleton<WindowsInputBinding>();
-                c.AddSingleton<GameWindowsBinding>();
+                c.AddSingleton<PlatformerPlayerInputBinding>();
+                c.AddSingleton<PlayerCameraBinding>();
             });
 
-            _core.Add(_container.Resolve<WindowsInputBinding>())
-                .Add(_container.Resolve<SettingsBinding>())
-                .Add(_container.Resolve<GameWindowsBinding>());
-            */
+            _core.Add(_container.Resolve<PlatformerPlayerInputBinding>())
+                .Add(_container.Resolve<PlayerCameraBinding>());
+
             _core.Init();
         }
     }

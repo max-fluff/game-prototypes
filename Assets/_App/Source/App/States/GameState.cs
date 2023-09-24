@@ -24,7 +24,6 @@ namespace MaxFluff.Prototypes
         {
             _container = app.Services.ConfigureScoped(c =>
             {
-                c.AddSingleton(_context.UICamera);
                 c.AddSingleton(_context.RaycastView);
 
                 c.AddSingleton(_context.UI.WindowsOrganizer);
@@ -35,7 +34,6 @@ namespace MaxFluff.Prototypes
                 c.AddSingleton<WindowsOrganizerPresenter>();
                 c.AddSingleton<LoadingWindowPresenter>();
 
-                c.AddSingleton<ICameraPresenter, CameraPresenter>("UICamera");
                 c.AddSingleton<RaycastPresenter>();
 
                 c.AddSingleton<WindowsInputBinding>();

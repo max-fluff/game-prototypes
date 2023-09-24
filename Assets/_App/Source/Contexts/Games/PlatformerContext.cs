@@ -1,6 +1,8 @@
-﻿namespace MaxFluff.Prototypes.Games
+﻿namespace MaxFluff.Prototypes
 {
     public class PlatformerContext : GameContext
     {
+        public PlatformerPlayerView PlayerView;
+        public CameraView MainCameraView;
     }
 }
