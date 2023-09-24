@@ -4,5 +4,6 @@
     {
         public PlatformerPlayerView PlayerView;
         public CameraView MainCameraView;
+        public StateBasedGameObjectsControllerView StateBasedGameObjectsController;
     }
 }

@@ -34,7 +34,7 @@ namespace MaxFluff.Prototypes
                 Rigidbody.mass = value switch
                 {
                     PlatformerPlayerState.Square => 0.3f,
-                    PlatformerPlayerState.Circle => 1f,
+                    PlatformerPlayerState.Circle => 20f,
                     _ => Rigidbody.mass
                 };
                 

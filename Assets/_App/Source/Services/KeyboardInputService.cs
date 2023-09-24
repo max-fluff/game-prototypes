@@ -12,7 +12,7 @@ namespace MaxFluff.Prototypes
         public bool IsKeyDown(KeyCode key) =>
             Input.GetKeyDown(key);
 
-        public bool IsActionDown(Actions key) =>
+        public bool IsActionHeld(Actions key) =>
             key switch
             {
                 Actions.Left => Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow),
