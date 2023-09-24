@@ -15,10 +15,12 @@ namespace MaxFluff.Prototypes
                 c.AddSingleton(_context.PlayerView);
                 c.AddSingleton(_context.MainCameraView);
                 c.AddSingleton(_context.StateBasedGameObjectsController);
+                c.AddSingleton(_context.ScoreCounterView);
 
                 c.AddSingleton<PlatformerPlayerPresenter>();
                 c.AddSingleton<CameraPresenter>();
                 c.AddSingleton<StateBasedGameObjectsControllerPresenter>();
+                c.AddSingleton<ScoreCounterPresenter>();
 
                 c.AddSingleton<PlatformerPlayerInputBinding>();
                 c.AddSingleton<PlayerCameraBinding>();
