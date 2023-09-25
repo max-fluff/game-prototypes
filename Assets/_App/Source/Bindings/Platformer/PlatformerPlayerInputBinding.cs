@@ -118,9 +118,12 @@ namespace MaxFluff.Prototypes
 
         private void SetState(PlatformerPlayerState state)
         {
-            if (!_switchAvailable || state == _player.State || _player.Energy < PlatformerPlayerPresenter.MaxEnergy) return;
+            const int energyToUse = PlatformerPlayerPresenter.MaxEnergy / 2;
 
-            _player.Energy = 0;
+            if (!_switchAvailable || state == _player.State ||
+                _player.Energy < energyToUse) return;
+
+            _player.Energy -= energyToUse;
 
             SetGravityDirection(Vector3.down, true);
 
