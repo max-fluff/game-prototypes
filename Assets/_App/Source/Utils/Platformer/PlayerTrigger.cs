@@ -1,12 +1,12 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.Events;
 
 namespace MaxFluff.Prototypes
 {
     public class PlayerTrigger : MonoBehaviour
     {
-        public event Action OnPlayerEnter;
-        public event Action OnPlayerExit;
+        public UnityEvent OnPlayerEnter;
+        public UnityEvent OnPlayerExit;
 
         private void OnTriggerEnter(Collider other)
         {

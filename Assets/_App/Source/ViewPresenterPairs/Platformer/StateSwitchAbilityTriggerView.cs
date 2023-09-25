@@ -15,7 +15,7 @@ namespace MaxFluff.Prototypes
 
         public StateSwitchAbilityTriggerPresenter(StateSwitchAbilityTriggerView view) : base(view)
         {
-            view.trigger.OnPlayerEnter += SendOnSetStateSwitchAbilityState;
+            view.trigger.OnPlayerEnter.AddListener(SendOnSetStateSwitchAbilityState);
         }
 
         private void SendOnSetStateSwitchAbilityState() =>
