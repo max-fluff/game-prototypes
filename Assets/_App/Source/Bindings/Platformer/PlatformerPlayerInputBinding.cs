@@ -109,7 +109,7 @@ namespace MaxFluff.Prototypes
         {
             if (IsPlayerOnFloor || forced)
             {
-                _player.Transform.position += _player.Transform.up * 0.1f;
+                _player.Transform.position += _player.Transform.up * 0.2f;
                 _gravityService.SetGravityDirection(direction);
                 var angle = Vector3.SignedAngle(-direction, _player.Transform.up, Vector3.forward);
                 _player.Transform.Rotate(Vector3.forward, -angle);

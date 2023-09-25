@@ -38,14 +38,11 @@
 
         private void FillPlayerEnergy(int amount, EnergyPresenter presenter)
         {
-            if (_player.Energy < PlatformerPlayerPresenter.MaxEnergy)
-            {
-                _player.Energy += amount;
-                _score += amount;
-                _scoreCounterPresenter.SetScore(_score);
-                presenter.OnFillRequested -= FillPlayerEnergy;
-                presenter.Destroy();
-            }
+            _player.Energy += amount;
+            _score += amount;
+            _scoreCounterPresenter.SetScore(_score);
+            presenter.OnFillRequested -= FillPlayerEnergy;
+            presenter.Destroy();
         }
     }
 }
