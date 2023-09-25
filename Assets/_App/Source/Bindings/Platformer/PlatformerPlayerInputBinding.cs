@@ -7,67 +7,119 @@ namespace MaxFluff.Prototypes
     {
         private readonly PlatformerPlayerPresenter _player;
         private readonly StateBasedGameObjectsControllerPresenter _stateBasedGameObjectsController;
+        private readonly StateSwitchAbilityTriggersListPresenter _stateSwitchAbilityTriggersList;
         private readonly KeyboardInputService _keyboardInput;
         private readonly RaycastPresenter _raycastPresenter;
+        private readonly GravityService _gravityService;
 
         private bool _additionalJumpLeft;
+        private bool _switchAvailable = true;
+        private int _defaultLayer;
+        private int _ignoreLightLayer;
 
-        private bool IsPlayerOnFloor =>
-            _raycastPresenter.DefaultRaycast(new Ray(_player.Transform.position, Vector3.down), out _, 1) ||
-            _raycastPresenter.DefaultRaycast(new Ray(_player.Transform.position + Vector3.left * 0.5f, Vector3.down),
-                out _, 1) ||
-            _raycastPresenter.DefaultRaycast(new Ray(_player.Transform.position + Vector3.right * 0.5f, Vector3.down),
-                out _, 1);
+        private int floorLayer => _defaultLayer | _ignoreLightLayer;
+
+        private bool IsPlayerOnFloor
+        {
+            get
+            {
+                var downVector = _player.State == PlatformerPlayerState.Circle ? Vector3.down : -_player.Transform.up;
+                var rightVector = _player.State == PlatformerPlayerState.Circle ? Vector3.right : _player.Transform.right;
+                return _raycastPresenter.PhysicsRaycast(new Ray(_player.Transform.position, downVector),
+                           out _, 1,
+                           floorLayer) ||
+                       _raycastPresenter.PhysicsRaycast(
+                           new Ray(_player.Transform.position + rightVector * 0.5f, downVector),
+                           out _, 1, floorLayer) ||
+                       _raycastPresenter.PhysicsRaycast(
+                           new Ray(_player.Transform.position - rightVector * 0.5f, downVector),
+                           out _, 1, floorLayer);
+            }
+        }
 
         public PlatformerPlayerInputBinding(
             PlatformerPlayerPresenter player,
             StateBasedGameObjectsControllerPresenter stateBasedGameObjectsController,
+            StateSwitchAbilityTriggersListPresenter stateSwitchAbilityTriggersList,
             KeyboardInputService keyboardInput,
-            RaycastPresenter raycastPresenter)
+            RaycastPresenter raycastPresenter,
+            GravityService gravityService)
         {
             _player = player;
             _stateBasedGameObjectsController = stateBasedGameObjectsController;
+            _stateSwitchAbilityTriggersList = stateSwitchAbilityTriggersList;
             _keyboardInput = keyboardInput;
             _raycastPresenter = raycastPresenter;
+            _gravityService = gravityService;
         }
 
         public void Init()
         {
             _keyboardInput.OnInputAction += ProcessInputAction;
+            _stateSwitchAbilityTriggersList.OnSetStateSwitchAbilityState += SetSwitchAbilityState;
 
             SetState(PlatformerPlayerState.Square);
 
-            Physics.gravity *= 2;
+            _gravityService.GravityPower *= 2;
+
+            _defaultLayer = LayerMask.GetMask("Default");
+            _ignoreLightLayer = LayerMask.GetMask("IgnoreLight");
         }
+
+        private void SetSwitchAbilityState(bool isAvailable) => 
+            _switchAvailable = isAvailable;
 
         private void ProcessInputAction(Actions action)
         {
             switch (action)
             {
                 case Actions.Up:
-                    ProcessJumpAction();
+                    if (_player.State == PlatformerPlayerState.Triangle)
+                        SetGravityDirection(_player.Transform.up);
+                    else
+                        ProcessJumpAction();
                     break;
                 case Actions.Down:
+                    if (_player.State == PlatformerPlayerState.Triangle)
+                        SetGravityDirection(-_player.Transform.up);
                     break;
                 case Actions.Left:
+                    if (_player.State == PlatformerPlayerState.Triangle)
+                        SetGravityDirection(-_player.Transform.right);
                     break;
                 case Actions.Right:
+                    if (_player.State == PlatformerPlayerState.Triangle)
+                        SetGravityDirection(_player.Transform.right);
                     break;
                 case Actions.Selection1:
-                    //if (IsPlayerOnFloor)
                     SetState(PlatformerPlayerState.Square);
                     break;
                 case Actions.Selection2:
-                    //if (IsPlayerOnFloor)
                     SetState(PlatformerPlayerState.Circle);
                     break;
                 case Actions.Selection3:
+                    SetState(PlatformerPlayerState.Triangle);
                     break;
+            }
+        }
+
+        private void SetGravityDirection(Vector3 direction, bool forced = false)
+        {
+            if (IsPlayerOnFloor || forced)
+            {
+                _player.Transform.position += _player.Transform.up * 0.1f;
+                _gravityService.SetGravityDirection(direction);
+                var angle = Vector3.SignedAngle(-direction, _player.Transform.up, Vector3.forward);
+                _player.Transform.Rotate(Vector3.forward, -angle);
             }
         }
 
         private void SetState(PlatformerPlayerState state)
         {
+            if (!_switchAvailable || state == _player.State) return;
+
+            SetGravityDirection(Vector3.down, true);
+
             _player.State = state;
             _stateBasedGameObjectsController.SetState(state);
         }
@@ -132,7 +184,7 @@ namespace MaxFluff.Prototypes
 
         public void Destroy()
         {
-            Physics.gravity /= 2;
+            _gravityService.ResetGravity();
         }
     }
 }

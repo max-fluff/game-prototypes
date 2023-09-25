@@ -8,11 +8,12 @@ namespace MaxFluff.Prototypes
 
         public GameObject Square;
         public GameObject Circle;
+        public GameObject Triangle;
     }
 
     public class PlatformerPlayerPresenter : TransformPresenter<PlatformerPlayerView>
     {
-        private PlatformerPlayerState _state;
+        private PlatformerPlayerState _state = PlatformerPlayerState.None;
 
         public Rigidbody Rigidbody => _view.Rigidbody;
 
@@ -23,6 +24,8 @@ namespace MaxFluff.Prototypes
             {
                 Rigidbody.constraints = value switch
                 {
+                    PlatformerPlayerState.Triangle => RigidbodyConstraints.FreezeRotation |
+                                                      RigidbodyConstraints.FreezePositionZ,
                     PlatformerPlayerState.Square => RigidbodyConstraints.FreezeRotation |
                                                     RigidbodyConstraints.FreezePositionZ,
                     PlatformerPlayerState.Circle => RigidbodyConstraints.FreezePositionZ |
@@ -37,11 +40,18 @@ namespace MaxFluff.Prototypes
                     PlatformerPlayerState.Circle => 20f,
                     _ => Rigidbody.mass
                 };
-                
+
+                if (value == PlatformerPlayerState.Triangle)
+                {
+                    Rigidbody.velocity = Vector3.zero;
+                    Rigidbody.angularVelocity = Vector3.zero;
+                }
+
                 Transform.rotation = Quaternion.identity;
 
                 _view.Square.SetActive(value == PlatformerPlayerState.Square);
                 _view.Circle.SetActive(value == PlatformerPlayerState.Circle);
+                _view.Triangle.SetActive(value == PlatformerPlayerState.Triangle);
                 _state = value;
             }
         }
@@ -55,6 +65,7 @@ namespace MaxFluff.Prototypes
     {
         Square,
         Circle,
-        Triangle
+        Triangle,
+        None
     }
 }

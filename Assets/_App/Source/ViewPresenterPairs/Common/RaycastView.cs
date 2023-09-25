@@ -14,18 +14,10 @@ namespace MaxFluff.Prototypes
     public sealed class RaycastPresenter : PresenterBase<RaycastView>
     {
         private readonly int _defaultLayer;
-        private readonly int _botLayer;
-        private readonly int _buttonModuleLayer;
-        private readonly int _flagLayer;
-        private readonly int _constructorBlocksLayer;
 
         public RaycastPresenter(RaycastView view) : base(view)
         {
             _defaultLayer = LayerMask.GetMask("Default");
-            _botLayer = LayerMask.GetMask("OmegaBot");
-            _buttonModuleLayer = LayerMask.GetMask("ButtonModule");
-            _flagLayer = LayerMask.GetMask("Flag");
-            _constructorBlocksLayer = LayerMask.GetMask("Default", "Container");
         }
 
         public bool GraphicRaycast(Vector2 position, out List<RaycastResult> results)

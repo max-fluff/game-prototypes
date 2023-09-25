@@ -50,6 +50,7 @@ namespace MaxFluff.Prototypes
                 c.AddSingleton<CursorService>();
                 c.AddSingleton<KeyboardInputService>();
                 c.AddSingleton<LocalizationService>();
+                c.AddSingleton<GravityService>();
             });
         }
 

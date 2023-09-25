@@ -1,4 +1,6 @@
-﻿namespace MaxFluff.Prototypes
+﻿using UnityEngine;
+
+namespace MaxFluff.Prototypes
 {
     public class PlayerCameraBinding : IInitBinding, IRunBinding
     {
@@ -27,6 +29,10 @@
             //var offsetMultiplier = velocityMagnitude > 10f ? velocityMagnitude / 10f : 1f;
             playerPosition.z += _zOffset;
             _mainCamera.Transform.position = playerPosition;
+
+            _mainCamera.Transform.rotation = _playerPresenter.State == PlatformerPlayerState.Triangle
+                ? _playerPresenter.Transform.rotation
+                : Quaternion.identity;
         }
     }
 }
