@@ -24,7 +24,9 @@ namespace MaxFluff.Prototypes
             get
             {
                 var downVector = _player.State == PlatformerPlayerState.Circle ? Vector3.down : -_player.Transform.up;
-                var rightVector = _player.State == PlatformerPlayerState.Circle ? Vector3.right : _player.Transform.right;
+                var rightVector = _player.State == PlatformerPlayerState.Circle
+                    ? Vector3.right
+                    : _player.Transform.right;
                 return _raycastPresenter.PhysicsRaycast(new Ray(_player.Transform.position, downVector),
                            out _, 1,
                            floorLayer) ||
@@ -66,7 +68,7 @@ namespace MaxFluff.Prototypes
             _ignoreLightLayer = LayerMask.GetMask("IgnoreLight");
         }
 
-        private void SetSwitchAbilityState(bool isAvailable) => 
+        private void SetSwitchAbilityState(bool isAvailable) =>
             _switchAvailable = isAvailable;
 
         private void ProcessInputAction(Actions action)
@@ -116,7 +118,9 @@ namespace MaxFluff.Prototypes
 
         private void SetState(PlatformerPlayerState state)
         {
-            if (!_switchAvailable || state == _player.State) return;
+            if (!_switchAvailable || state == _player.State || _player.Energy < PlatformerPlayerPresenter.MaxEnergy) return;
+
+            _player.Energy = 0;
 
             SetGravityDirection(Vector3.down, true);
 
@@ -148,8 +152,6 @@ namespace MaxFluff.Prototypes
                     if (IsPlayerOnFloor && _player.Rigidbody.velocity.y < 0.01f)
                         _player.Rigidbody.AddForce(400 * 20 * Vector2.up);
                     break;
-                case PlatformerPlayerState.Triangle:
-                    break;
             }
         }
 
@@ -175,10 +177,6 @@ namespace MaxFluff.Prototypes
                         _player.Rigidbody.velocity = _player.Rigidbody.velocity.normalized * 30;
 
                     break;
-                case PlatformerPlayerState.Triangle:
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
             }
         }
 

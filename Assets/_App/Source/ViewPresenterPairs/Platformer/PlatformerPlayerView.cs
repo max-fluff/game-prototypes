@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace MaxFluff.Prototypes
 {
@@ -16,6 +17,11 @@ namespace MaxFluff.Prototypes
         private PlatformerPlayerState _state = PlatformerPlayerState.None;
 
         public Rigidbody Rigidbody => _view.Rigidbody;
+
+        private int _energy;
+        public const int MaxEnergy = 100;
+
+        public event Action<float> OnEnergyAmountUpdate;
 
         public PlatformerPlayerState State
         {
@@ -47,12 +53,24 @@ namespace MaxFluff.Prototypes
                     Rigidbody.angularVelocity = Vector3.zero;
                 }
 
+                Rigidbody.isKinematic = false;
+
                 Transform.rotation = Quaternion.identity;
 
                 _view.Square.SetActive(value == PlatformerPlayerState.Square);
                 _view.Circle.SetActive(value == PlatformerPlayerState.Circle);
                 _view.Triangle.SetActive(value == PlatformerPlayerState.Triangle);
                 _state = value;
+            }
+        }
+
+        public int Energy
+        {
+            get => _energy;
+            set
+            {
+                _energy = value > MaxEnergy ? MaxEnergy : value;
+                OnEnergyAmountUpdate?.Invoke((float)Energy / MaxEnergy);
             }
         }
 

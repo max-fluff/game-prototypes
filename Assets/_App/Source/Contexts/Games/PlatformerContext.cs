@@ -6,6 +6,8 @@
         public CameraView MainCameraView;
         public StateBasedGameObjectsControllerView StateBasedGameObjectsController;
         public StateSwitchAbilityTriggersListView StateSwitchAbilityTriggersList;
+        public EnergyContainerView EnergyContainer;
         public ScoreCounterView ScoreCounterView;
+        public EnergyCounterView EnergyCounterView;
     }
 }
