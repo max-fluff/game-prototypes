@@ -1,4 +1,5 @@
 ﻿using System;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 namespace MaxFluff.Prototypes
@@ -55,6 +56,23 @@ namespace MaxFluff.Prototypes
             _gravityService = gravityService;
         }
 
+        private async UniTask KeepConstraintsUntilFloorTouch()
+        { 
+            var cachedGravity = Physics.gravity;
+
+            if (Mathf.Abs(Physics.gravity.y) > 0.01f)
+                _player.Rigidbody.constraints |= RigidbodyConstraints.FreezePositionX;
+
+            if (Mathf.Abs(Physics.gravity.x) > 0.01f)
+                _player.Rigidbody.constraints |= RigidbodyConstraints.FreezePositionY;
+
+            await UniTask.WaitUntil(() => IsPlayerOnFloor || cachedGravity != Physics.gravity);
+
+            _player.Rigidbody.constraints &= ~RigidbodyConstraints.FreezePositionX;
+            _player.Rigidbody.constraints &= ~RigidbodyConstraints.FreezePositionY;
+        }
+
+
         public void Init()
         {
             _keyboardInput.OnInputAction += ProcessInputAction;
@@ -109,10 +127,18 @@ namespace MaxFluff.Prototypes
         {
             if (IsPlayerOnFloor || forced)
             {
-                _player.Transform.position += _player.Transform.up * 0.3f;
-                _gravityService.SetGravityDirection(direction);
-                var angle = Vector3.SignedAngle(-direction, _player.Transform.up, Vector3.forward);
-                _player.Transform.Rotate(Vector3.forward, -angle);
+                var wasSet = _gravityService.SetGravityDirection(direction);
+
+                if (wasSet)
+                {
+                    _player.PlayJumpSound();
+
+                    _player.Transform.position += _player.Transform.up * 0.3f;
+                    var angle = Vector3.SignedAngle(-direction, _player.Transform.up, Vector3.forward);
+                    _player.Transform.Rotate(Vector3.forward, -angle);
+
+                    KeepConstraintsUntilFloorTouch().Forget();
+                }
             }
         }
 
@@ -125,10 +151,11 @@ namespace MaxFluff.Prototypes
 
             _player.Energy -= energyToUse;
 
-            SetGravityDirection(Vector3.down, true);
-
             _player.State = state;
+            _player.PlayStateSound();
             _stateBasedGameObjectsController.SetState(state);
+
+            SetGravityDirection(Vector3.down, true);
         }
 
         private void ProcessJumpAction()
@@ -138,6 +165,8 @@ namespace MaxFluff.Prototypes
                 case PlatformerPlayerState.Square:
                     if (IsPlayerOnFloor)
                     {
+                        _player.PlayJumpSound();
+
                         _player.Rigidbody.AddForce(180 * Vector2.up);
                         _additionalJumpLeft = true;
                     }
@@ -145,6 +174,8 @@ namespace MaxFluff.Prototypes
                     {
                         if (_additionalJumpLeft)
                         {
+                            _player.PlayJumpSound();
+
                             _player.Rigidbody.AddForce(180 * Vector2.up);
                             _additionalJumpLeft = false;
                         }
@@ -153,7 +184,12 @@ namespace MaxFluff.Prototypes
                     break;
                 case PlatformerPlayerState.Circle:
                     if (IsPlayerOnFloor && _player.Rigidbody.velocity.y < 5f)
+                    {
+                        _player.PlayJumpSound();
+
                         _player.Rigidbody.AddForce(400 * 20 * Vector2.up);
+                    }
+
                     break;
             }
         }

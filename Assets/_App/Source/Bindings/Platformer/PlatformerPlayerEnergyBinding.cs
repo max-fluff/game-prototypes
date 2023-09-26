@@ -40,8 +40,14 @@
 
         private void FillPlayerEnergy(int amount, EnergyPresenter presenter)
         {
+            var wasFull = _player.Energy == PlatformerPlayerPresenter.MaxEnergy;
+            
             _player.PlayCoinSound();
             _player.Energy += amount;
+
+            if (!wasFull && _player.Energy == PlatformerPlayerPresenter.MaxEnergy)
+                _player.PlayFullSound();
+            
             _score += amount;
             _scoreCounterPresenter.SetScore(_score);
             presenter.OnFillRequested -= FillPlayerEnergy;

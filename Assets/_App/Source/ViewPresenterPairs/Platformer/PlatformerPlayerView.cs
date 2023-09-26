@@ -10,9 +10,14 @@ namespace MaxFluff.Prototypes
         public GameObject Square;
         public GameObject Circle;
         public GameObject Triangle;
-        public AudioSource CoinSound;
+        public AudioSource AudioSource;
 
         public PhysicMaterial CirclePhysicsMaterial;
+        
+        public AudioClip Coin;
+        public AudioClip State;
+        public AudioClip Full;
+        public AudioClip Jump;
     }
 
     public class PlatformerPlayerPresenter : TransformPresenter<PlatformerPlayerView>
@@ -67,7 +72,7 @@ namespace MaxFluff.Prototypes
                 _state = value;
             }
         }
-
+        
         public int Energy
         {
             get => _energy;
@@ -79,7 +84,16 @@ namespace MaxFluff.Prototypes
         }
 
         public void PlayCoinSound() =>
-            _view.CoinSound.Play();
+            _view.AudioSource.PlayOneShot(_view.Coin);
+        
+        public void PlayFullSound() =>
+            _view.AudioSource.PlayOneShot(_view.Full);
+        
+        public void PlayStateSound() =>
+            _view.AudioSource.PlayOneShot(_view.State);
+
+        public void PlayJumpSound() =>
+            _view.AudioSource.PlayOneShot(_view.Jump);
 
         public PlatformerPlayerPresenter(PlatformerPlayerView view) : base(view)
         {

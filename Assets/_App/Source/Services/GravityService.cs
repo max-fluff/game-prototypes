@@ -17,10 +17,13 @@ namespace MaxFluff.Prototypes
             set => Physics.gravity = Physics.gravity.normalized * value;
         }
 
-        public void SetGravityDirection(Vector3 gravity)
+        public bool SetGravityDirection(Vector3 gravity)
         {
-            if (Physics.gravity.normalized != gravity.normalized)
+            var notEqual = Physics.gravity.normalized != gravity.normalized;
+            if (notEqual)
                 Physics.gravity = gravity.normalized * Physics.gravity.magnitude;
+
+            return notEqual;
         }
 
         public void SetGravity(Vector3 gravity)
