@@ -24,18 +24,18 @@ namespace MaxFluff.Prototypes
             get
             {
                 var downVector = _player.State == PlatformerPlayerState.Circle ? Vector3.down : -_player.Transform.up;
+                var length = _player.State == PlatformerPlayerState.Circle ? 1.5f : 1f;
                 var rightVector = _player.State == PlatformerPlayerState.Circle
                     ? Vector3.right
                     : _player.Transform.right;
                 return _raycastPresenter.PhysicsRaycast(new Ray(_player.Transform.position, downVector),
-                           out _, 1,
-                           floorLayer) ||
+                           out _, length, floorLayer) ||
                        _raycastPresenter.PhysicsRaycast(
                            new Ray(_player.Transform.position + rightVector * 0.5f, downVector),
-                           out _, 1, floorLayer) ||
+                           out _, length, floorLayer) ||
                        _raycastPresenter.PhysicsRaycast(
                            new Ray(_player.Transform.position - rightVector * 0.5f, downVector),
-                           out _, 1, floorLayer);
+                           out _, length, floorLayer);
             }
         }
 
@@ -109,7 +109,7 @@ namespace MaxFluff.Prototypes
         {
             if (IsPlayerOnFloor || forced)
             {
-                _player.Transform.position += _player.Transform.up * 0.2f;
+                _player.Transform.position += _player.Transform.up * 0.3f;
                 _gravityService.SetGravityDirection(direction);
                 var angle = Vector3.SignedAngle(-direction, _player.Transform.up, Vector3.forward);
                 _player.Transform.Rotate(Vector3.forward, -angle);
@@ -152,7 +152,7 @@ namespace MaxFluff.Prototypes
 
                     break;
                 case PlatformerPlayerState.Circle:
-                    if (IsPlayerOnFloor && _player.Rigidbody.velocity.y < 0.01f)
+                    if (IsPlayerOnFloor && _player.Rigidbody.velocity.y < 5f)
                         _player.Rigidbody.AddForce(400 * 20 * Vector2.up);
                     break;
             }

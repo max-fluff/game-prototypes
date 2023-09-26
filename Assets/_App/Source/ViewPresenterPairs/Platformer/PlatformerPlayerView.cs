@@ -10,6 +10,9 @@ namespace MaxFluff.Prototypes
         public GameObject Square;
         public GameObject Circle;
         public GameObject Triangle;
+        public AudioSource CoinSound;
+
+        public PhysicMaterial CirclePhysicsMaterial;
     }
 
     public class PlatformerPlayerPresenter : TransformPresenter<PlatformerPlayerView>
@@ -43,6 +46,7 @@ namespace MaxFluff.Prototypes
                 Rigidbody.mass = value switch
                 {
                     PlatformerPlayerState.Square => 0.3f,
+                    PlatformerPlayerState.Triangle => 20f,
                     PlatformerPlayerState.Circle => 20f,
                     _ => Rigidbody.mass
                 };
@@ -74,8 +78,12 @@ namespace MaxFluff.Prototypes
             }
         }
 
+        public void PlayCoinSound() =>
+            _view.CoinSound.Play();
+
         public PlatformerPlayerPresenter(PlatformerPlayerView view) : base(view)
         {
+            _view.CirclePhysicsMaterial.bounciness = 0;
         }
     }
 

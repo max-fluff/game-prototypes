@@ -23,8 +23,10 @@
 
         public void Init()
         {
+            var sum = 0;
             foreach (var energy in _energyContainerPresenter.Transform.GetComponentsInChildren<EnergyView>())
             {
+                sum += energy.EnergyValue;
                 var energyPresenter = new EnergyPresenter(energy);
                 energyPresenter.OnFillRequested += FillPlayerEnergy;
             }
@@ -38,6 +40,7 @@
 
         private void FillPlayerEnergy(int amount, EnergyPresenter presenter)
         {
+            _player.PlayCoinSound();
             _player.Energy += amount;
             _score += amount;
             _scoreCounterPresenter.SetScore(_score);
