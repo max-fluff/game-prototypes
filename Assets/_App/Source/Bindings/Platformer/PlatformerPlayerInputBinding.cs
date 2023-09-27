@@ -82,7 +82,7 @@ namespace MaxFluff.Prototypes
             _stateSwitchAbilityTriggersList.OnSetStateSwitchAbilityState += SetSwitchAbilityState;
 
             _stateBasedGameObjectsController.SetState(PlatformerPlayerState.None);
-            
+
             _gravityService.GravityPower *= 2;
 
             _defaultLayer = LayerMask.GetMask("Default");
@@ -202,6 +202,9 @@ namespace MaxFluff.Prototypes
 
         public void Run()
         {
+            if (!_additionalJumpLeft && IsPlayerOnFloor)
+                _additionalJumpLeft = true;
+
             if (_windowsOrganizerPresenter.IsAnyWindowOpened)
                 return;
 
