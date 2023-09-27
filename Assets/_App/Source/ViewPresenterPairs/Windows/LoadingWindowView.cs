@@ -7,7 +7,6 @@ namespace MaxFluff.Prototypes
     public sealed class LoadingWindowView : WindowViewBase
     {
         public RectTransform ImageInner;
-        public RectTransform ImageOuter;
 
         public float RotationDuration;
 
@@ -34,8 +33,6 @@ namespace MaxFluff.Prototypes
             _view.Label.SetTerm(labelTerm);
 
             _view.ImageInner.DOLocalRotate(new Vector3(0f, 0f, 360f), _view.RotationDuration, RotateMode.FastBeyond360)
-                .SetLoops(-1).SetEase(Ease.Linear);
-            _view.ImageOuter.DOLocalRotate(new Vector3(0f, 0f, -360f), _view.RotationDuration, RotateMode.FastBeyond360)
                 .SetLoops(-1).SetEase(Ease.Linear);
         }
     }

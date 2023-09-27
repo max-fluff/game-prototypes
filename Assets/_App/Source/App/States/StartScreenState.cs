@@ -23,6 +23,7 @@ namespace MaxFluff.Prototypes
 
                 c.AddSingleton(_context.WindowsOrganizer);
                 c.AddSingleton(_context.LoadingWindow);
+                c.AddSingleton(_context.QuitWindow);
                 c.AddSingleton(_context.RaycastView);
                 c.AddSingleton(_context.GamesListView);
 
@@ -34,6 +35,7 @@ namespace MaxFluff.Prototypes
 
                 c.AddSingleton<WindowsOrganizerPresenter>();
                 c.AddSingleton<LoadingWindowPresenter>();
+                c.AddSingleton<QuitWindowPresenter>();
 
                 c.AddSingleton<WindowsInputBinding>();
                 c.AddSingleton<EnterGameBinding>();

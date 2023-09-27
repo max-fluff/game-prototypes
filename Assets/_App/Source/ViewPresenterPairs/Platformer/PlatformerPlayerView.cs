@@ -27,7 +27,7 @@ namespace MaxFluff.Prototypes
         public Rigidbody Rigidbody => _view.Rigidbody;
 
         private int _energy;
-        public const int MaxEnergy = 200;
+        public const int MaxEnergy = 300;
 
         public event Action<float> OnEnergyAmountUpdate;
 

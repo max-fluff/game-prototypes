@@ -9,6 +9,7 @@ namespace MaxFluff.Prototypes
         private readonly PlatformerPlayerPresenter _player;
         private readonly StateBasedGameObjectsControllerPresenter _stateBasedGameObjectsController;
         private readonly StateSwitchAbilityTriggersListPresenter _stateSwitchAbilityTriggersList;
+        private readonly WindowsOrganizerPresenter _windowsOrganizerPresenter;
         private readonly KeyboardInputService _keyboardInput;
         private readonly RaycastPresenter _raycastPresenter;
         private readonly GravityService _gravityService;
@@ -44,6 +45,7 @@ namespace MaxFluff.Prototypes
             PlatformerPlayerPresenter player,
             StateBasedGameObjectsControllerPresenter stateBasedGameObjectsController,
             StateSwitchAbilityTriggersListPresenter stateSwitchAbilityTriggersList,
+            WindowsOrganizerPresenter windowsOrganizerPresenter,
             KeyboardInputService keyboardInput,
             RaycastPresenter raycastPresenter,
             GravityService gravityService)
@@ -51,13 +53,14 @@ namespace MaxFluff.Prototypes
             _player = player;
             _stateBasedGameObjectsController = stateBasedGameObjectsController;
             _stateSwitchAbilityTriggersList = stateSwitchAbilityTriggersList;
+            _windowsOrganizerPresenter = windowsOrganizerPresenter;
             _keyboardInput = keyboardInput;
             _raycastPresenter = raycastPresenter;
             _gravityService = gravityService;
         }
 
         private async UniTask KeepConstraintsUntilFloorTouch()
-        { 
+        {
             var cachedGravity = Physics.gravity;
 
             if (Mathf.Abs(Physics.gravity.y) > 0.01f)
@@ -91,6 +94,9 @@ namespace MaxFluff.Prototypes
 
         private void ProcessInputAction(Actions action)
         {
+            if (_windowsOrganizerPresenter.IsAnyWindowOpened)
+                return;
+
             switch (action)
             {
                 case Actions.Up:
@@ -196,6 +202,9 @@ namespace MaxFluff.Prototypes
 
         public void Run()
         {
+            if (_windowsOrganizerPresenter.IsAnyWindowOpened)
+                return;
+
             var resultingHorizontalMovement =
                 (_keyboardInput.IsActionHeld(Actions.Left) ? -1 : 0) +
                 (_keyboardInput.IsActionHeld(Actions.Right) ? 1 : 0);
