@@ -81,8 +81,8 @@ namespace MaxFluff.Prototypes
             _keyboardInput.OnInputAction += ProcessInputAction;
             _stateSwitchAbilityTriggersList.OnSetStateSwitchAbilityState += SetSwitchAbilityState;
 
-            SetState(PlatformerPlayerState.Square);
-
+            _stateBasedGameObjectsController.SetState(PlatformerPlayerState.None);
+            
             _gravityService.GravityPower *= 2;
 
             _defaultLayer = LayerMask.GetMask("Default");
@@ -220,7 +220,7 @@ namespace MaxFluff.Prototypes
                     break;
                 case PlatformerPlayerState.Circle:
 
-                    _player.Rigidbody.AddForce(resultingHorizontalMovement * 50 * 20 * Vector2.right);
+                    _player.Rigidbody.AddForce(Vector2.right * (resultingHorizontalMovement * 30000 * Time.deltaTime));
                     if (_player.Rigidbody.velocity.magnitude > 40)
                         _player.Rigidbody.velocity = _player.Rigidbody.velocity.normalized * 30;
 
