@@ -19,6 +19,10 @@ namespace MaxFluff.Prototypes
         private int _defaultLayer;
         private int _ignoreLightLayer;
 
+        private float _timeTillLastOnFloor;
+        private const float COYOTE_TIME = 0.1f;
+        private bool _isJumping = false;
+
         private int floorLayer => _defaultLayer | _ignoreLightLayer;
 
         private bool IsPlayerOnFloor
@@ -26,7 +30,8 @@ namespace MaxFluff.Prototypes
             get
             {
                 var downVector = _player.State == PlatformerPlayerState.Circle ? Vector3.down : -_player.Transform.up;
-                var length = _player.State == PlatformerPlayerState.Circle ? 1.5f : 1f;
+                const float length = 1.2f;
+                var sideLength = _player.State == PlatformerPlayerState.Circle ? 1.2f : 1.1f;
                 var rightVector = _player.State == PlatformerPlayerState.Circle
                     ? Vector3.right
                     : _player.Transform.right;
@@ -34,10 +39,10 @@ namespace MaxFluff.Prototypes
                            out _, length, floorLayer) ||
                        _raycastPresenter.PhysicsRaycast(
                            new Ray(_player.Transform.position + rightVector * 0.5f, downVector),
-                           out _, length, floorLayer) ||
+                           out _, sideLength, floorLayer) ||
                        _raycastPresenter.PhysicsRaycast(
                            new Ray(_player.Transform.position - rightVector * 0.5f, downVector),
-                           out _, length, floorLayer);
+                           out _, sideLength, floorLayer);
             }
         }
 
@@ -164,16 +169,48 @@ namespace MaxFluff.Prototypes
             SetGravityDirection(Vector3.down, true);
         }
 
+        private void MakeJump(float value)
+        {
+            if (_isJumping) return;
+
+            _player.PlayJumpSound();
+
+            var velocity = _player.Rigidbody.velocity;
+            if (velocity.y < 0f)
+                velocity.y = 0;
+            else
+                velocity.y /= 2;
+
+            _player.Rigidbody.velocity = velocity;
+
+            JumpAsync(value).Forget();
+        }
+
+        private async UniTask JumpAsync(float value)
+        {
+            var count = 0;
+            const int division = 5;
+            const int jumpDuration = 60;
+
+            while (count < division && _keyboardInput.IsActionHeld(Actions.Up))
+            {
+                _isJumping = true;
+                _player.Rigidbody.AddForce(value / division * Vector2.up);
+                count++;
+                await UniTask.Delay(jumpDuration / division, DelayType.Realtime);
+            }
+
+            _isJumping = false;
+        }
+
         private void ProcessJumpAction()
         {
             switch (_player.State)
             {
                 case PlatformerPlayerState.Square:
-                    if (IsPlayerOnFloor)
+                    if (IsPlayerOnFloor || _timeTillLastOnFloor < COYOTE_TIME)
                     {
-                        _player.PlayJumpSound();
-
-                        _player.Rigidbody.AddForce(180 * Vector2.up);
+                        MakeJump(180F);
                         _additionalJumpLeft = true;
                     }
                     else
@@ -182,18 +219,19 @@ namespace MaxFluff.Prototypes
                         {
                             _player.PlayJumpSound();
 
-                            _player.Rigidbody.AddForce(180 * Vector2.up);
+                            MakeJump(180F);
+
                             _additionalJumpLeft = false;
                         }
                     }
 
                     break;
                 case PlatformerPlayerState.Circle:
-                    if (IsPlayerOnFloor && _player.Rigidbody.velocity.y < 5f)
+                    if (IsPlayerOnFloor || _timeTillLastOnFloor < COYOTE_TIME)
                     {
                         _player.PlayJumpSound();
 
-                        _player.Rigidbody.AddForce(400 * 20 * Vector2.up);
+                        MakeJump(8000F);
                     }
 
                     break;
@@ -202,7 +240,14 @@ namespace MaxFluff.Prototypes
 
         public void Run()
         {
-            if (!_additionalJumpLeft && IsPlayerOnFloor)
+            var isOnFloor = IsPlayerOnFloor;
+
+            if (isOnFloor)
+                _timeTillLastOnFloor = 0;
+            else
+                _timeTillLastOnFloor += Time.deltaTime;
+
+            if (!_additionalJumpLeft && isOnFloor)
                 _additionalJumpLeft = true;
 
             if (_windowsOrganizerPresenter.IsAnyWindowOpened)
