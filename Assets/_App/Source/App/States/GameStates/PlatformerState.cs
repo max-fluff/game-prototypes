@@ -1,6 +1,4 @@
-﻿using Cysharp.Threading.Tasks;
-using MaxFluff.Prototypes.Games;
-using Omega.IoC;
+﻿using Omega.IoC;
 
 namespace MaxFluff.Prototypes
 {
@@ -11,31 +9,36 @@ namespace MaxFluff.Prototypes
         protected override void InitState(App app)
         {
             base.InitState(app);
-            /*
-            _container = app.Services.ConfigureScoped(c =>
+
+            _container = _container.ConfigureScoped(c =>
             {
-                c.AddSingleton(_context.UICamera);
-                c.AddSingleton(_context.RaycastView);
+                c.AddSingleton(_context.PlayerView);
+                c.AddSingleton(_context.MainCameraView);
+                c.AddSingleton(_context.StateBasedGameObjectsController);
+                c.AddSingleton(_context.ScoreCounterView);
+                c.AddSingleton(_context.EnergyCounterView);
+                c.AddSingleton(_context.StateSwitchAbilityTriggersList);
+                c.AddSingleton(_context.EnergyContainer);
 
-                c.AddSingleton(_context.UI.WindowsOrganizer);
-                c.AddSingleton(_context.UI.LoadingWindow);
+                c.AddSingleton<PlatformerPlayerPresenter>();
+                c.AddSingleton<CameraPresenter>();
+                c.AddSingleton<StateBasedGameObjectsControllerPresenter>();
+                c.AddSingleton<ScoreCounterPresenter>();
+                c.AddSingleton<EnergyCounterPresenter>();
+                c.AddSingleton<StateSwitchAbilityTriggersListPresenter>();
+                c.AddSingleton<EnergyContainerPresenter>();
 
-                c.AddSingleton<GameEvents>();
-
-                c.AddSingleton<WindowsOrganizerPresenter>();
-                c.AddSingleton<LoadingWindowPresenter>();
-
-                c.AddSingleton<ICameraPresenter, CameraPresenter>("UICamera");
-                c.AddSingleton<RaycastPresenter>();
-
-                c.AddSingleton<WindowsInputBinding>();
-                c.AddSingleton<GameWindowsBinding>();
+                c.AddSingleton<PlatformerPlayerInputBinding>();
+                c.AddSingleton<PlayerCameraBinding>();
+                c.AddSingleton<PlatformerPlayerEnergyBinding>();
+                c.AddSingleton<PlatformerQuitBinding>();
             });
 
-            _core.Add(_container.Resolve<WindowsInputBinding>())
-                .Add(_container.Resolve<SettingsBinding>())
-                .Add(_container.Resolve<GameWindowsBinding>());
-            */
+            _core.Add(_container.Resolve<PlatformerPlayerInputBinding>())
+                .Add(_container.Resolve<PlayerCameraBinding>())
+                .Add(_container.Resolve<PlatformerPlayerEnergyBinding>())
+                .Add(_container.Resolve<PlatformerQuitBinding>());
+
             _core.Init();
         }
     }

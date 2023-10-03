@@ -6,7 +6,7 @@ namespace MaxFluff.Prototypes
 {
     public abstract class GameState<T> : AppStateBase<T> where T : GameContext
     {
-        protected SceneChangerService SceneChanger;
+        private SceneChangerService _sceneChanger;
         protected AppScenes AppScenes;
 
         protected abstract string RequiredSceneName { get; }
@@ -14,9 +14,11 @@ namespace MaxFluff.Prototypes
         protected override async UniTask InitContext(App app)
         {
             AppScenes = app.Services.Resolve<AppScenes>();
+            _sceneChanger = app.Services.Resolve<SceneChangerService>();
+            
             while ((_context = Object.FindObjectOfType<T>()) == null)
             {
-                await app.Services.Resolve<SceneChangerService>().SwitchToScene(RequiredSceneName);
+                await _sceneChanger.SwitchToScene(RequiredSceneName);
             }
         }
 
@@ -24,18 +26,18 @@ namespace MaxFluff.Prototypes
         {
             _container = app.Services.ConfigureScoped(c =>
             {
-                c.AddSingleton(_context.UICamera);
                 c.AddSingleton(_context.RaycastView);
 
                 c.AddSingleton(_context.UI.WindowsOrganizer);
                 c.AddSingleton(_context.UI.LoadingWindow);
+                c.AddSingleton(_context.UI.QuitWindow);
 
                 c.AddSingleton<GameEvents>();
 
                 c.AddSingleton<WindowsOrganizerPresenter>();
                 c.AddSingleton<LoadingWindowPresenter>();
+                c.AddSingleton<QuitWindowPresenter>();
 
-                c.AddSingleton<ICameraPresenter, CameraPresenter>("UICamera");
                 c.AddSingleton<RaycastPresenter>();
 
                 c.AddSingleton<WindowsInputBinding>();
@@ -47,12 +49,6 @@ namespace MaxFluff.Prototypes
 
             _core.Add(_container.Resolve<WindowsInputBinding>())
                 .Add(_container.Resolve<GameWindowsBinding>());
-        }
-
-        public override async UniTask Destroy(App app)
-        {
-            _core.Destroy();
-            await SceneChanger.UnloadSceneAsync(RequiredSceneName);
         }
     }
 }

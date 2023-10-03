@@ -50,6 +50,7 @@ namespace MaxFluff.Prototypes
                 c.AddSingleton<CursorService>();
                 c.AddSingleton<KeyboardInputService>();
                 c.AddSingleton<LocalizationService>();
+                c.AddSingleton<GravityService>();
             });
         }
 
@@ -72,7 +73,7 @@ namespace MaxFluff.Prototypes
                 _stateMachine.Launch(context switch
                 {
                     StartScreenContext _ => new StartScreenState(),
-                    //GameContext _ => new GameState()
+                    PlatformerContext _ => new PlatformerState()
                 });
             }
             else

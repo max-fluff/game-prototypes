@@ -12,5 +12,6 @@ namespace MaxFluff.Prototypes
         
         [Header("Windows")]
         public LoadingWindowView LoadingWindow;
+        public QuitWindowView QuitWindow;
     }
 }

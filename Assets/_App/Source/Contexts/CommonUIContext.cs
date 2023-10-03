@@ -9,5 +9,6 @@ namespace MaxFluff.Prototypes
         [Header("Windows")]
         public WindowsOrganizerView WindowsOrganizer;
         public LoadingWindowView LoadingWindow;
+        public QuitWindowView QuitWindow;
     }
 }
