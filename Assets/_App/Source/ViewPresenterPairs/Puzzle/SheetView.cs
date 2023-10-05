@@ -1,4 +1,6 @@
-﻿using Cysharp.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Cysharp.Threading.Tasks;
 using Lean.Transition;
 using TMPro;
 using UnityEngine;
@@ -7,6 +9,8 @@ namespace MaxFluff.Prototypes
 {
     public class SheetView : ViewBase
     {
+        public List<PuzzleResultMarkView> ResultMarks = new List<PuzzleResultMarkView>();
+
         public TMP_InputField Name;
         public TMP_Dropdown Gender;
         public TMP_InputField BDay;
@@ -23,22 +27,42 @@ namespace MaxFluff.Prototypes
         public TMP_InputField Child2;
         public TMP_InputField Child3;
 
+        public GameObject Congrats;
+        public GameObject Main;
+
         [Header("Transitions")] public LeanPlayer AppearTransition;
         public LeanPlayer DisappearTransition;
     }
 
     public class SheetPresenter : PresenterBase<SheetView>
     {
-        private readonly DataSheet _dataSheet;
+        private DataSheet _dataSheet;
+        public List<PuzzleResultMarkPresenter> ResultMarks = new List<PuzzleResultMarkPresenter>();
 
-        public SheetPresenter(SheetView view, DataSheet dataSheet) : base(view)
+        public SheetPresenter(SheetView view) : base(view)
         {
-            _dataSheet = dataSheet;
-            InitDataSheet();
+            foreach (var resultMarkPresenter in view.ResultMarks.Select(resultMarkView =>
+                         new PuzzleResultMarkPresenter(resultMarkView)))
+            {
+                ResultMarks.Add(resultMarkPresenter);
+                resultMarkPresenter.SetVisible(false);
+            }
         }
 
-        private void InitDataSheet()
+        public string PhoneNumber => _dataSheet.PhoneNumber;
+
+        public void ShowCongrats()
         {
+            _view.Congrats.SetActive(true);
+            _view.Main.SetActive(false);
+            _view.AppearTransition?.Begin();
+            _dataSheet = default;
+        }
+
+        public void UpdateDataSheet(DataSheet dataSheet)
+        {
+            _dataSheet = dataSheet;
+
             _view.Name.SetTextWithoutNotify((_dataSheet.FilledData & PersonData.Name) == PersonData.Name
                 ? _dataSheet.Name
                 : string.Empty);
@@ -99,14 +123,68 @@ namespace MaxFluff.Prototypes
                 if (_dataSheet.ChildrenNames.Count > 1) _view.Child2.SetTextWithoutNotify(_dataSheet.ChildrenNames[1]);
                 if (_dataSheet.ChildrenNames.Count > 2) _view.Child3.SetTextWithoutNotify(_dataSheet.ChildrenNames[2]);
             }
-            
+
             _view.AppearTransition?.Begin();
+        }
+
+        public void ShowResult()
+        {
+            var personData = PersonData.None;
+
+            if (_dataSheet.Name == _view.Name.text)
+                personData |= PersonData.Name;
+            if (_dataSheet.Gender.ToString() == _view.Gender.options[_view.Gender.value].text)
+                personData |= PersonData.Gender;
+            if (_dataSheet.DayOfBirth.ToString() == _view.BDay.text)
+                personData |= PersonData.Day;
+            if (_dataSheet.MonthOfBirth == _view.BMonth.value)
+                personData |= PersonData.Month;
+            if (_dataSheet.YearOfBirth.ToString() == _view.BYear.text)
+                personData |= PersonData.Year;
+
+            if (_dataSheet.PhoneNumber == _view.PhoneNum.text)
+                personData |= PersonData.PhoneNum;
+            if (_dataSheet.TaxNumber == _view.TaxNum.text)
+                personData |= PersonData.TaxNum;
+
+            if (_dataSheet.AddressCity == _view.City.options[_view.City.value].text)
+                personData |= PersonData.AddressCity;
+            if (_dataSheet.AddressStreet == _view.Street.options[_view.Street.value].text)
+                personData |= PersonData.AddressStreet;
+            if (_dataSheet.AddressBld.ToString() == _view.Bld.text)
+                personData |= PersonData.AddressBld;
+
+            if (_dataSheet.Spouse.Name == _view.PartnerName.text &&
+                _dataSheet.Spouse.PhoneNumber == _view.PartnerPhone.text)
+                personData |= PersonData.Spouse;
+
+            var shouldAddChildren = true;
+
+            foreach (var name in _dataSheet.ChildrenNames)
+            {
+                if ((_view.Child1.text != name && _view.Child2.text != name && _view.Child3.text != name) ||
+                    _view.Child1.text == _view.Child2.text
+                    || _view.Child1.text == _view.Child3.text
+                    || _view.Child2.text == _view.Child3.text)
+                {
+                    shouldAddChildren = false;
+                    break;
+                }
+            }
+
+            if (shouldAddChildren)
+                personData |= PersonData.Children;
+
+            foreach (var resultMark in ResultMarks)
+                resultMark.SetVisible((resultMark.PersonData & personData) == resultMark.PersonData);
         }
 
         public async UniTask Disappear()
         {
             _view.DisappearTransition.Begin();
             await UniTask.Delay(550);
+            foreach (var resultMark in ResultMarks)
+                resultMark.SetVisible(false);
         }
     }
 }

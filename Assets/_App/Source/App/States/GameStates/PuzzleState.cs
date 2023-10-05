@@ -20,6 +20,7 @@ namespace MaxFluff.Prototypes
                 c.AddSingleton(_context.Phone);
 
                 c.AddSingleton<CameraPresenter>();
+                c.AddSingleton<SheetPresenter>();
                 c.AddSingleton<SendButtonPresenter>();
                 c.AddSingleton<PhonePresenter>();
 

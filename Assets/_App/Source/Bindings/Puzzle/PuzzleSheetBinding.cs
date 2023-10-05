@@ -4,22 +4,21 @@ namespace MaxFluff.Prototypes
 {
     public class PuzzleSheetBinding : IInitBinding
     {
-        private readonly SheetView _sheetView;
+        private readonly SheetPresenter _sheetPresenter;
         private readonly SendButtonPresenter _sendButtonPresenter;
         private readonly DataSheetsForPuzzle _dataSheets;
         private readonly PhonePresenter _phone;
 
-        private int _currentSheet = 0;
-        private SheetPresenter _sheetPresenter;
+        private int _currentSheet = -1;
 
         public PuzzleSheetBinding(
-            SheetView sheetView,
+            SheetPresenter sheetPresenter,
             SendButtonPresenter sendButtonPresenter,
             DataSheetsForPuzzle dataSheets,
             PhonePresenter phone
         )
         {
-            _sheetView = sheetView;
+            _sheetPresenter = sheetPresenter;
             _sendButtonPresenter = sendButtonPresenter;
             _dataSheets = dataSheets;
             _phone = phone;
@@ -34,8 +33,6 @@ namespace MaxFluff.Prototypes
 
         private void Send()
         {
-            _phone.HangUp();
-
             SendAsync().Forget();
         }
 
@@ -44,7 +41,17 @@ namespace MaxFluff.Prototypes
             _phone.HangUp();
             _sendButtonPresenter.SetButtonActive(false);
 
+            _sheetPresenter.ShowResult();
+            
+            await UniTask.Delay(600);
+
             await _sheetPresenter.Disappear();
+
+            if (_dataSheets.DataSheets.Count - 1 <= _currentSheet)
+            {
+                _sheetPresenter.ShowCongrats();
+                return;
+            }
 
             NextSheet();
             await UniTask.Delay(500);
@@ -53,8 +60,8 @@ namespace MaxFluff.Prototypes
 
         private void NextSheet()
         {
-            //_currentSheet++;
-            _sheetPresenter = new SheetPresenter(_sheetView, _dataSheets.DataSheets[_currentSheet]);
+            _currentSheet++;
+            _sheetPresenter.UpdateDataSheet(_dataSheets.DataSheets[_currentSheet]);
         }
     }
 }
