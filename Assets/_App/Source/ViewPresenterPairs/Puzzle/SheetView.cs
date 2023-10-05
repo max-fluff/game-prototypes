@@ -176,7 +176,10 @@ namespace MaxFluff.Prototypes
                 personData |= PersonData.Children;
 
             foreach (var resultMark in ResultMarks)
-                resultMark.SetVisible((resultMark.PersonData & personData) == resultMark.PersonData);
+            {
+                resultMark.SetState((resultMark.PersonData & personData) == resultMark.PersonData);
+                resultMark.SetVisible(true);
+            }
         }
 
         public async UniTask Disappear()
