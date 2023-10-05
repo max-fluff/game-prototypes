@@ -9,7 +9,7 @@ namespace MaxFluff.Prototypes
         public IoContainer Services { get; private set; }
 
         public readonly AppRuntimeConfiguration RuntimeConfiguration;
-        
+
         public App(AppRuntimeConfiguration runtimeConfiguration)
         {
             RuntimeConfiguration = runtimeConfiguration;
@@ -73,7 +73,8 @@ namespace MaxFluff.Prototypes
                 _stateMachine.Launch(context switch
                 {
                     StartScreenContext _ => new StartScreenState(),
-                    PlatformerContext _ => new PlatformerState()
+                    PlatformerContext _ => new PlatformerState(),
+                    PuzzleContext _ => new PuzzleState()
                 });
             }
             else
