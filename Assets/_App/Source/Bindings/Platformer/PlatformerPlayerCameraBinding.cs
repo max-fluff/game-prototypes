@@ -2,14 +2,14 @@
 
 namespace MaxFluff.Prototypes
 {
-    public class PlayerCameraBinding : IInitBinding, IRunBinding
+    public class PlatformerPlayerCameraBinding : IInitBinding, IRunBinding
     {
         private readonly CameraPresenter _mainCamera;
         private readonly PlatformerPlayerPresenter _playerPresenter;
 
-        private float _zOffset;
+        private Vector3 _offset;
 
-        public PlayerCameraBinding(
+        public PlatformerPlayerCameraBinding(
             CameraPresenter mainCamera,
             PlatformerPlayerPresenter playerPresenter)
         {
@@ -19,7 +19,7 @@ namespace MaxFluff.Prototypes
 
         public void Init()
         {
-            _zOffset = _mainCamera.Transform.position.z - _playerPresenter.Transform.position.z;
+            _offset = _mainCamera.Transform.position - _playerPresenter.Transform.position;
         }
 
         public void Run()
@@ -27,7 +27,7 @@ namespace MaxFluff.Prototypes
             var playerPosition = _playerPresenter.Transform.position;
             //var velocityMagnitude = _playerPresenter.Rigidbody.velocity.magnitude;
             //var offsetMultiplier = velocityMagnitude > 10f ? velocityMagnitude / 10f : 1f;
-            playerPosition.z += _zOffset;
+            playerPosition += _offset;
             _mainCamera.Transform.position = playerPosition;
 
             _mainCamera.Transform.rotation = _playerPresenter.State == PlatformerPlayerState.Triangle

@@ -19,6 +19,8 @@ namespace MaxFluff.Prototypes
                 Actions.Right => Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow),
                 Actions.Up => Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow),
                 Actions.Down => Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow),
+                Actions.Space => Input.GetKey(KeyCode.Space),
+                Actions.R => Input.GetKey(KeyCode.R),
                 _ => false
             };
 
@@ -54,18 +56,24 @@ namespace MaxFluff.Prototypes
 
             if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow))
                 return Actions.Down;
-            
+
             if (Input.GetKeyDown(KeyCode.Alpha1))
                 return Actions.Selection1;
-            
+
             if (Input.GetKeyDown(KeyCode.Alpha2))
                 return Actions.Selection2;
-            
+
             if (Input.GetKeyDown(KeyCode.Alpha3))
                 return Actions.Selection3;
 
             if (Input.GetKeyDown(KeyCode.Escape))
                 return Actions.Esc;
+
+            if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift))
+                return Actions.Shift;
+
+            if (Input.GetKeyDown(KeyCode.R))
+                return Actions.R;
 
             return Actions.None;
         }
@@ -82,6 +90,8 @@ namespace MaxFluff.Prototypes
         Selection1,
         Selection2,
         Selection3,
+        Shift,
+        R,
         None
     }
 }
