@@ -11,6 +11,7 @@ namespace MaxFluff.Prototypes
     public class QuitWindowPresenter : WindowPresenterBase<QuitWindowView>
     {
         public override bool MayBeClosed => true;
+        public override bool AllowAnotherWindowOnTop => true;
 
         public event Action OnQuitRequested; 
 

@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace MaxFluff.Prototypes
 {
-    public class PlatformerPlayerView : TransformView
+    public class PlatformerPlayerView : PlayerView
     {
         public Rigidbody Rigidbody;
 
@@ -20,7 +20,7 @@ namespace MaxFluff.Prototypes
         public AudioClip Jump;
     }
 
-    public class PlatformerPlayerPresenter : TransformPresenter<PlatformerPlayerView>
+    public class PlatformerPlayerPresenter : PlayerPresenter<PlatformerPlayerView>
     {
         private PlatformerPlayerState _state = PlatformerPlayerState.None;
 

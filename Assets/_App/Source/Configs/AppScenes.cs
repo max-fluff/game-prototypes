@@ -10,5 +10,6 @@ namespace MaxFluff.Prototypes
         public SceneReference StartScreen;
         public SceneReference PlatformerScene;
         public SceneReference PuzzleScene;
+        public SceneReference RaceScene;
     }
 }

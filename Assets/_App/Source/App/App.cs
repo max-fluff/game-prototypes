@@ -74,7 +74,8 @@ namespace MaxFluff.Prototypes
                 {
                     StartScreenContext _ => new StartScreenState(),
                     PlatformerContext _ => new PlatformerState(),
-                    PuzzleContext _ => new PuzzleState()
+                    PuzzleContext _ => new PuzzleState(),
+                    RaceContext _ => new RaceState()
                 });
             }
             else

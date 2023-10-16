@@ -279,6 +279,7 @@ namespace MaxFluff.Prototypes
         public void Destroy()
         {
             _gravityService.ResetGravity();
+            _keyboardInput.OnInputAction -= ProcessInputAction;
         }
     }
 }
