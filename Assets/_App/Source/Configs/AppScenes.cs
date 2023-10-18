@@ -11,5 +11,6 @@ namespace MaxFluff.Prototypes
         public SceneReference PlatformerScene;
         public SceneReference PuzzleScene;
         public SceneReference RaceScene;
+        public SceneReference DialogsScene;
     }
 }
