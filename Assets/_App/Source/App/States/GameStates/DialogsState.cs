@@ -17,10 +17,12 @@ namespace MaxFluff.Prototypes
                 c.AddSingleton(_context.ReplyView);
                 c.AddSingleton(_context.CurrentLineView);
                 c.AddSingleton(_context.CounterView);
+                c.AddSingleton(_context.PersonView);
 
                 c.AddSingleton<ReplyPresenter>();
                 c.AddSingleton<CurrentLinePresenter>();
                 c.AddSingleton<CounterPresenter>();
+                c.AddSingleton<PersonPresenter>();
 
                 c.AddSingleton<PlatformerQuitBinding>();
                 c.AddSingleton<DialogBinding>();

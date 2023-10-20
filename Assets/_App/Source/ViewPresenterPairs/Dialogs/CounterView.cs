@@ -13,6 +13,6 @@ namespace MaxFluff.Prototypes
         {
         }
 
-        public void SetText(int text) => _view.Text.SetText(text.ToString());
+        public void SetCount(int text) => _view.Text.SetText(text.ToString());
     }
 }

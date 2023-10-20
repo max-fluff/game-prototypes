@@ -1,4 +1,5 @@
-﻿using Lean.Gui;
+﻿using System;
+using Lean.Gui;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -6,59 +7,74 @@ namespace MaxFluff.Prototypes
 {
     public class ReplyView : ViewBase
     {
-        public Slider FormSlider;
-        public Slider RSlider;
-        public Slider GSlider;
-        public Slider BSlider;
+        public Slider PositiveSlider;
+        public Slider PassionSlider;
+        public Slider ConfidenceSlider;
+        public Slider SmartSlider;
         public LeanBox Shape;
+        public LeanButton Reply;
     }
 
     public class ReplyPresenter : PresenterBase<ReplyView>
     {
+        public event Action OnReply;
+
         public ReplyPresenter(ReplyView view) : base(view)
         {
-            _view.FormSlider.onValueChanged.AddListener(UpdateForm);
-            _view.RSlider.onValueChanged.AddListener(UpdateR);
-            _view.GSlider.onValueChanged.AddListener(UpdateG);
-            _view.BSlider.onValueChanged.AddListener(UpdateB);
+            _view.PositiveSlider.onValueChanged.AddListener(UpdateForm);
+            _view.PassionSlider.onValueChanged.AddListener(UpdateR);
+            _view.ConfidenceSlider.onValueChanged.AddListener(UpdateB);
+            _view.SmartSlider.onValueChanged.AddListener(UpdateG);
 
+            UpdateForm(_view.PositiveSlider.value);
+            UpdateR(_view.PassionSlider.value);
+            UpdateG(_view.ConfidenceSlider.value);
+            UpdateB(_view.SmartSlider.value);
 
-            UpdateForm(_view.FormSlider.value);
-            UpdateR(_view.RSlider.value);
-            UpdateG(_view.GSlider.value);
-            UpdateB(_view.BSlider.value);
+            _view.Reply.OnClick.AddListener(SendOnReply);
         }
 
-        public void UpdateForm(float value)
+        private void SendOnReply()
+        {
+            OnReply?.Invoke();
+
+            _view.PositiveSlider.value = 0f;
+            _view.PassionSlider.value = 0f;
+            _view.ConfidenceSlider.value = 0f;
+            _view.SmartSlider.value = 0f;
+        }
+
+        private void UpdateForm(float value)
         {
             var size = ((RectTransform)_view.Shape.transform).sizeDelta.x;
             _view.Shape.Radius = size / 2 * value;
         }
 
-        public void UpdateR(float value)
+        private void UpdateR(float value)
         {
             var color = _view.Shape.color;
             color.r = value;
             _view.Shape.color = color;
         }
 
-        public void UpdateG(float value)
+        private void UpdateG(float value)
         {
             var color = _view.Shape.color;
             color.g = value;
             _view.Shape.color = color;
         }
 
-        public void UpdateB(float value)
+        private void UpdateB(float value)
         {
             var color = _view.Shape.color;
             color.b = value;
             _view.Shape.color = color;
         }
 
-        public Vector4 GetReply()
-        {
-            return new Vector4(_view.FormSlider.value, _view.RSlider.value, _view.GSlider.value, _view.BSlider.value);
-        }
+        public Vector4 GetReply() =>
+            new Vector4(_view.PositiveSlider.value, _view.PassionSlider.value, _view.ConfidenceSlider.value, _view.SmartSlider.value);
+
+        public void SetActive(bool isActive) =>
+            _view.gameObject.SetActive(isActive);
     }
 }
