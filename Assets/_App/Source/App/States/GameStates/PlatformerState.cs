@@ -31,13 +31,13 @@ namespace MaxFluff.Prototypes
                 c.AddSingleton<PlatformerPlayerInputBinding>();
                 c.AddSingleton<PlatformerPlayerCameraBinding>();
                 c.AddSingleton<PlatformerPlayerEnergyBinding>();
-                c.AddSingleton<PlatformerQuitBinding>();
+                c.AddSingleton<GameQuitBinding>();
             });
 
             _core.Add(_container.Resolve<PlatformerPlayerInputBinding>())
                 .Add(_container.Resolve<PlatformerPlayerCameraBinding>())
                 .Add(_container.Resolve<PlatformerPlayerEnergyBinding>())
-                .Add(_container.Resolve<PlatformerQuitBinding>());
+                .Add(_container.Resolve<GameQuitBinding>());
 
             _core.Init();
         }

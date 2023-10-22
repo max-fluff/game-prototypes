@@ -24,11 +24,11 @@ namespace MaxFluff.Prototypes
                 c.AddSingleton<CounterPresenter>();
                 c.AddSingleton<PersonPresenter>();
 
-                c.AddSingleton<PlatformerQuitBinding>();
+                c.AddSingleton<GameQuitBinding>();
                 c.AddSingleton<DialogBinding>();
             });
 
-            _core.Add(_container.Resolve<PlatformerQuitBinding>())
+            _core.Add(_container.Resolve<GameQuitBinding>())
                 .Add(_container.Resolve<DialogBinding>());
 
             _core.Init();

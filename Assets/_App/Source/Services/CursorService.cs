@@ -7,6 +7,12 @@ namespace MaxFluff.Prototypes
     {
         private readonly CursorsConfig _cursorsConfig;
 
+        public bool IsCursorVisible
+        {
+            get => Cursor.visible;
+            set => Cursor.visible = value;
+        }
+
         public CursorService(CursorsConfig cursorsConfig)
         {
             _cursorsConfig = cursorsConfig;

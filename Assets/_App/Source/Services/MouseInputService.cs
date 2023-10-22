@@ -16,8 +16,12 @@ namespace MaxFluff.Prototypes
         public bool MiddlePressed { get; private set; }
         public int PressedButton { get; private set; }
 
+        public Vector2 MouseDelta { get; private set; }
+
         public bool Down { get; private set; }
         public bool Up { get; private set; }
+
+        private Vector2 _cachedPosition = Vector2.zero;
 
         public MouseInputService()
         {
@@ -72,6 +76,9 @@ namespace MaxFluff.Prototypes
                     Press = finger;
                 }
             }
+
+            MouseDelta = (Vector2)Input.mousePosition - _cachedPosition;
+            _cachedPosition = Input.mousePosition;
         }
 
         ~MouseInputService()

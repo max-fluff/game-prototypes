@@ -30,14 +30,14 @@ namespace MaxFluff.Prototypes
                 c.AddSingleton<BordersPresenter>();
                 c.AddSingleton<FinishPresenter>();
 
-                c.AddSingleton<PlatformerQuitBinding>();
+                c.AddSingleton<GameQuitBinding>();
                 c.AddSingleton<RacePlayerCameraBinding>();
                 c.AddSingleton<RacePlayerInputBinding>();
                 c.AddSingleton<RaceTimerAndResetBinding>();
                 c.AddSingleton<RaceWindowsBinding>();
             });
 
-            _core.Add(_container.Resolve<PlatformerQuitBinding>())
+            _core.Add(_container.Resolve<GameQuitBinding>())
                 .Add(_container.Resolve<RacePlayerCameraBinding>())
                 .Add(_container.Resolve<RacePlayerInputBinding>())
                 .Add(_container.Resolve<RaceTimerAndResetBinding>())
