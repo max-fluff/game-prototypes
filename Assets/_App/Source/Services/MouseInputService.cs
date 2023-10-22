@@ -12,6 +12,7 @@ namespace MaxFluff.Prototypes
         public float Wheel { get; private set; }
         public bool IsOverUI { get; private set; }
         public bool LeftPressed { get; private set; }
+        public bool LeftClicked { get; private set; }
         public bool RightPressed { get; private set; }
         public bool MiddlePressed { get; private set; }
         public int PressedButton { get; private set; }
@@ -20,8 +21,6 @@ namespace MaxFluff.Prototypes
 
         public bool Down { get; private set; }
         public bool Up { get; private set; }
-
-        private Vector2 _cachedPosition = Vector2.zero;
 
         public MouseInputService()
         {
@@ -56,6 +55,8 @@ namespace MaxFluff.Prototypes
                 LeftPressed = Input.GetMouseButton(0);
                 RightPressed = Input.GetMouseButton(1);
                 MiddlePressed = Input.GetMouseButton(2);
+                
+                LeftClicked = Input.GetMouseButtonDown(0);
             }
             else if (finger.Index == LeanTouch.MOUSE_FINGER_INDEX)
             {
@@ -77,8 +78,7 @@ namespace MaxFluff.Prototypes
                 }
             }
 
-            MouseDelta = (Vector2)Input.mousePosition - _cachedPosition;
-            _cachedPosition = Input.mousePosition;
+            MouseDelta = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
         }
 
         ~MouseInputService()

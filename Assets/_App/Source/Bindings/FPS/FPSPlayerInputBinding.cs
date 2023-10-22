@@ -47,7 +47,7 @@ namespace MaxFluff.Prototypes
             get
             {
                 var downVector = -_player.Transform.up;
-                const float length = 0.5f;
+                const float length = 0.8f;
                 var rightVector = _player.Transform.right;
                 return _raycastPresenter.PhysicsRaycast(
                            new Ray(_player.Transform.position + Vector3.up * 0.1f, downVector),
@@ -60,7 +60,6 @@ namespace MaxFluff.Prototypes
                            out _, length, floorLayer);
             }
         }
-
 
         public void Init()
         {
@@ -159,15 +158,35 @@ namespace MaxFluff.Prototypes
             _player.Rigidbody.velocity =
                 new Vector3(horizontalVelocity.x, verticalVelocity, horizontalVelocity.y);
 
-            _player.Transform.Rotate(0f, _mouseInputService.MouseDelta.x / 5f, 0f);
+            _player.Transform.Rotate(0f, _mouseInputService.MouseDelta.x * Time.deltaTime * 150f, 0f);
             var transformRotation = _mainCamera.Transform.localRotation.eulerAngles +
-                                    new Vector3(-_mouseInputService.MouseDelta.y / 5f, 0f, 0f);
+                                    new Vector3(-_mouseInputService.MouseDelta.y * Time.deltaTime * 150f, 0f, 0f);
 
             transformRotation.x = transformRotation.x > 180
                 ? Mathf.Clamp(transformRotation.x, 300, 361)
                 : Mathf.Clamp(transformRotation.x, -1, 60);
-            
+
             _mainCamera.Transform.localRotation = Quaternion.Euler(transformRotation);
+
+            if (_mouseInputService.LeftClicked)
+                Zap();
+        }
+
+        private void Zap()
+        {
+            var aimRay = new Ray(_mainCamera.Transform.position, _mainCamera.Transform.forward);
+            var wasHit = _raycastPresenter.DefaultRaycast(aimRay, out var hit, 200f);
+            Vector3 hitPoint;
+            if (wasHit)
+            {
+                hitPoint = hit.point;
+                var zappable = hit.collider.GetComponent<IZappableObject>();
+                zappable?.Zap();
+            }
+            else
+                hitPoint = aimRay.GetPoint(200f);
+
+            _player.VisualizeShot(hitPoint);
         }
 
         public void Destroy()
