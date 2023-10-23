@@ -37,8 +37,8 @@ namespace MaxFluff.Prototypes.FPS
 
         private async UniTask MoveToActivePosition()
         {
-            var dist = Vector3.Distance(_initPosition, transform.position);
-            while (Vector3.Distance(transform.position, ActivePosition) > 0.01f)
+            var dist = Vector3.Distance(_initPosition, Rigidbody.transform.position);
+            while (Vector3.Distance(Rigidbody.transform.position, ActivePosition) > 0.01f)
             {
                 await UniTask.NextFrame();
 
@@ -49,7 +49,7 @@ namespace MaxFluff.Prototypes.FPS
 
                 Rigidbody.MovePosition(newPosition);
 
-                dist = Vector3.Distance(_initPosition, transform.position);
+                dist = Vector3.Distance(_initPosition, Rigidbody.transform.position);
 
                 if (dist > _distanceTotal)
                 {
@@ -73,8 +73,8 @@ namespace MaxFluff.Prototypes.FPS
 
         private async UniTask MoveToInitPosition()
         {
-            var dist = Vector3.Distance(ActivePosition, transform.position);
-            while (Vector3.Distance(transform.position, _initPosition) > 0.01f)
+            var dist = Vector3.Distance(ActivePosition, Rigidbody.transform.position);
+            while (Vector3.Distance(Rigidbody.transform.position, _initPosition) > 0.01f)
             {
                 await UniTask.NextFrame();
 
@@ -88,7 +88,7 @@ namespace MaxFluff.Prototypes.FPS
 
                 Rigidbody.MovePosition(newPosition);
 
-                dist = Vector3.Distance(ActivePosition, transform.position);
+                dist = Vector3.Distance(ActivePosition, Rigidbody.transform.position);
 
                 if (dist > _distanceTotal)
                 {
@@ -102,7 +102,7 @@ namespace MaxFluff.Prototypes.FPS
 
         private void Awake()
         {
-            _initPosition = transform.position;
+            _initPosition = Rigidbody.transform.position;
 
             _distanceTotal = Vector3.Distance(_initPosition, ActivePosition);
             _speed = _distanceTotal / MovingTime;

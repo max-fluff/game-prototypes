@@ -20,6 +20,9 @@ namespace MaxFluff.Prototypes
 
         private bool _isJumping;
 
+        private Transform _floorTransform;
+        private Vector3 _cachedFloorPosition;
+
         public FPSPlayerInputBinding(
             FPSPlayerPresenter player,
             CameraPresenter mainCamera,
@@ -49,15 +52,25 @@ namespace MaxFluff.Prototypes
                 var downVector = -_player.Transform.up;
                 const float length = 0.8f;
                 var rightVector = _player.Transform.right;
-                return _raycastPresenter.PhysicsRaycast(
-                           new Ray(_player.Transform.position + Vector3.up * 0.1f, downVector),
-                           out _, length, floorLayer) ||
-                       _raycastPresenter.PhysicsRaycast(
-                           new Ray(_player.Transform.position + rightVector * 0.5f, downVector),
-                           out _, length, floorLayer) ||
-                       _raycastPresenter.PhysicsRaycast(
-                           new Ray(_player.Transform.position - rightVector * 0.5f, downVector),
-                           out _, length, floorLayer);
+
+                var result = _raycastPresenter.PhysicsRaycast(
+                                 new Ray(_player.Transform.position + Vector3.up * 0.1f, downVector),
+                                 out var hit, length, floorLayer) ||
+                             _raycastPresenter.PhysicsRaycast(
+                                 new Ray(_player.Transform.position + rightVector * 0.5f, downVector),
+                                 out _, length, floorLayer) ||
+                             _raycastPresenter.PhysicsRaycast(
+                                 new Ray(_player.Transform.position - rightVector * 0.5f, downVector),
+                                 out _, length, floorLayer);
+
+                if (_floorTransform != hit.transform)
+                {
+                    _floorTransform = hit.transform;
+                    if (hit.transform != null)
+                        _cachedFloorPosition = hit.transform.position;
+                }
+
+                return result;
             }
         }
 
@@ -170,6 +183,13 @@ namespace MaxFluff.Prototypes
 
             if (_mouseInputService.LeftClicked)
                 Zap();
+
+            if (IsPlayerOnFloor && _floorTransform)
+            {
+                var floorDelta = _floorTransform.position - _cachedFloorPosition;
+                _player.Rigidbody.MovePosition(_player.Transform.position + floorDelta);
+                _cachedFloorPosition = _floorTransform.position;
+            }
         }
 
         private void Zap()
