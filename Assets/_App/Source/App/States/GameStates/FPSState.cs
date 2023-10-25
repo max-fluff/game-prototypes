@@ -15,16 +15,20 @@ namespace MaxFluff.Prototypes
             {
                 c.AddSingleton(_context.PlayerView);
                 c.AddSingleton(_context.MainCamera);
-                
+                c.AddSingleton(_context.Core);
+
                 c.AddSingleton<FPSPlayerPresenter>();
                 c.AddSingleton<CameraPresenter>();
-                
+                c.AddSingleton<CorePresenter>();
+
                 c.AddSingleton<GameQuitBinding>();
                 c.AddSingleton<FPSPlayerInputBinding>();
+                c.AddSingleton<CoreBinding>();
             });
 
             _core.Add(_container.Resolve<GameQuitBinding>())
-                .Add(_container.Resolve<FPSPlayerInputBinding>());
+                .Add(_container.Resolve<FPSPlayerInputBinding>())
+                .Add(_container.Resolve<CoreBinding>());
 
             _core.Init();
         }

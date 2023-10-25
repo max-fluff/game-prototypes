@@ -1,7 +1,8 @@
-﻿using Cysharp.Threading.Tasks;
+﻿using System;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-namespace MaxFluff.Prototypes.FPS
+namespace MaxFluff.Prototypes
 {
     public class ZappableWallPanel : MonoBehaviour, IZappableObject
     {
@@ -64,7 +65,7 @@ namespace MaxFluff.Prototypes.FPS
         private async UniTask CountDownUntilReset()
         {
             _timeFromZap = 0f;
-            while (_timeFromZap < ResetTime)
+            while (_timeFromZap < ResetTime || Math.Abs(ResetTime + 1) < 0.001f)
             {
                 _timeFromZap += Time.deltaTime;
                 await UniTask.NextFrame();

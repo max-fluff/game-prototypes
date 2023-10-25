@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using Cysharp.Threading.Tasks;
+﻿using Cysharp.Threading.Tasks;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace MaxFluff.Prototypes.FPS
+namespace MaxFluff.Prototypes
 {
     public class ZapRetranslator : MonoBehaviour, IZappableObject
     {
@@ -22,8 +20,22 @@ namespace MaxFluff.Prototypes.FPS
 
             foreach (var zappable in Area.ZappableObjectsInRange)
             {
+                if (!(Component)zappable)
+                {
+                    continue;
+                }
+
+                var targetPosition = ((Component)zappable).transform.position;
+                if (Physics.Raycast(transform.position, targetPosition - transform.position, out var hit,
+                        Vector3.Distance(targetPosition, transform.position)))
+                {
+                    var zappableInParent = hit.collider.GetComponentInParent<IZappableObject>();
+                    if (zappableInParent is null || zappableInParent != zappable)
+                        continue;
+                }
+
                 zappable.Zap();
-                VisualizeShot(((Component)zappable).transform.position);
+                VisualizeShot(targetPosition);
             }
 
             UnzapAtTheEndOfFrame().Forget();

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace MaxFluff.Prototypes.FPS
+namespace MaxFluff.Prototypes
 {
     public class ZapRetranslatorArea : MonoBehaviour
     {

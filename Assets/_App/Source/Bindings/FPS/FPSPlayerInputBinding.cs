@@ -78,7 +78,7 @@ namespace MaxFluff.Prototypes
         {
             _keyboardInput.OnInputAction += ProcessInputAction;
 
-            _gravityService.GravityPower *= 15;
+            _gravityService.GravityPower *= 20;
 
             _defaultLayer = LayerMask.GetMask("Default");
             _ignoreLightLayer = LayerMask.GetMask("IgnoreLight");
@@ -176,8 +176,8 @@ namespace MaxFluff.Prototypes
                                     new Vector3(-_mouseInputService.MouseDelta.y * Time.deltaTime * 150f, 0f, 0f);
 
             transformRotation.x = transformRotation.x > 180
-                ? Mathf.Clamp(transformRotation.x, 300, 361)
-                : Mathf.Clamp(transformRotation.x, -1, 60);
+                ? Mathf.Clamp(transformRotation.x, 280, 361)
+                : Mathf.Clamp(transformRotation.x, -1, 80);
 
             _mainCamera.Transform.localRotation = Quaternion.Euler(transformRotation);
 
@@ -195,7 +195,8 @@ namespace MaxFluff.Prototypes
         private void Zap()
         {
             var aimRay = new Ray(_mainCamera.Transform.position, _mainCamera.Transform.forward);
-            var wasHit = _raycastPresenter.DefaultRaycast(aimRay, out var hit, 200f);
+            var wasHit =
+                _raycastPresenter.PhysicsRaycast(aimRay, out var hit, 200f, ~LayerMask.GetMask("Ignore Raycast"));
             Vector3 hitPoint;
             if (wasHit)
             {

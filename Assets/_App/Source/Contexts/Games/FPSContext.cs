@@ -6,5 +6,6 @@ namespace MaxFluff.Prototypes
     {
         public FPSPlayerView PlayerView;
         public CameraView MainCamera;
+        public CoreView Core;
     }
 }

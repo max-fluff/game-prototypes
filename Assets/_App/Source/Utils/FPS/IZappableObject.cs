@@ -1,4 +1,4 @@
-﻿namespace MaxFluff.Prototypes.FPS
+﻿namespace MaxFluff.Prototypes
 {
     public interface IZappableObject
     {
