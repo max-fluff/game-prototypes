@@ -1,5 +1,4 @@
-﻿using System;
-using Cysharp.Threading.Tasks;
+﻿using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using MaxFluff.Prototypes.FPS;
 using UnityEngine;
@@ -12,6 +11,7 @@ namespace MaxFluff.Prototypes
         [SerializeField] private EnemyCore core;
         [SerializeField] private Rigidbody rigidbody;
         [SerializeField] private float disabilityTime;
+        [SerializeField] private EnemyDamageCollider damageCollider;
 
         private FPSPlayerView _player;
         private float _timeFromZap;
@@ -24,7 +24,19 @@ namespace MaxFluff.Prototypes
             _player = FindObjectOfType<FPSPlayerView>();
             _random ??= new Random();
 
+            damageCollider.OnEnter += DamageOnCollision;
+
             Movement().Forget();
+        }
+
+        private void DamageOnCollision(Collider collider)
+        {
+            var playerView = collider.GetComponentInParent<FPSPlayerView>();
+            if (!_isZapped && playerView)
+            {
+                playerView.Damage(15);
+                core.Zap();
+            }
         }
 
         private void TemporaryDisable()
@@ -52,8 +64,15 @@ namespace MaxFluff.Prototypes
                     LayerMask.GetMask("Default"));
 
                 if (isInView)
-                    transform.LookAt(_player.transform);
-                else if (Physics.Raycast(transform.position + transform.forward * 1.5f, transform.forward, 5f))
+                {
+                    var lookAtPosition = Physics.Raycast(transform.position - Vector3.up * 1f, -Vector3.up, 2f)
+                        ? _player.transform.position + Vector3.up * 2f
+                        : _player.transform.position;
+
+                    transform.LookAt(lookAtPosition);
+                }
+                else if (Physics.Raycast(transform.position + transform.forward * 2f, transform.forward, 3f,
+                             ~LayerMask.GetMask("Ignore Raycast", "Player")))
                 {
                     var addedRotation = Vector3.right * _random.Next(-180, 180) + Vector3.up * _random.Next(-180, 180);
 

@@ -7,5 +7,9 @@ namespace MaxFluff.Prototypes
         public FPSPlayerView PlayerView;
         public CameraView MainCamera;
         public CoreView Core;
+        public HealthVisualizationView HealthVisualization;
+        public FailWindowView FailWindow;
+        public WinWindowView WinWindow;
+        public CoreVisualView CoreVisualView;
     }
 }

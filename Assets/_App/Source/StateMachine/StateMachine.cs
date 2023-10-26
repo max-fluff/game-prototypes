@@ -7,7 +7,7 @@ namespace MaxFluff.Prototypes
     public sealed class StateMachine<TSubject> where TSubject : IStateSubject
     {
         private readonly TSubject _subject;
-        
+
         private IAsyncState<TSubject> _currentState;
         private bool _isStateInitialized;
 
@@ -18,9 +18,8 @@ namespace MaxFluff.Prototypes
 
         private async UniTask SwitchStateAsync(IAsyncState<TSubject> nextState)
         {
-            await UniTask.WhenAll(
-                Destroy(),
-                InitializeState(nextState));
+            await Destroy();
+            await InitializeState(nextState);
         }
 
         private async UniTask InitializeState(IAsyncState<TSubject> state)
