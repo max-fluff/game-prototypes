@@ -70,17 +70,31 @@ namespace MaxFluff.Prototypes
                         : _player.transform.position;
 
                     transform.LookAt(lookAtPosition);
+
+                    rigidbody.MovePosition(transform.position + transform.forward * 55f * Time.deltaTime);
                 }
-                else if (Physics.Raycast(transform.position + transform.forward * 2f, transform.forward, 3f,
-                             ~LayerMask.GetMask("Ignore Raycast", "Player")))
+                else
                 {
-                    var addedRotation = Vector3.right * _random.Next(-180, 180) + Vector3.up * _random.Next(-180, 180);
+                    var wasHit = Physics.Raycast(transform.position, transform.forward, 3f,
+                        ~LayerMask.GetMask("Ignore Raycast", "Player", "Enemy", "Zappable"));
 
-                    transform.DORotate(addedRotation, .5f, RotateMode.LocalAxisAdd);
-                    await UniTask.Delay(500);
+                    if (wasHit)
+                    {
+                        var addedRotation = Vector3.right * (_random.Next(1) == 0
+                                                ? _random.Next(-180, -90)
+                                                : _random.Next(90, 180)) +
+                                            Vector3.up * (_random.Next(1) == 0
+                                                ? _random.Next(-180, -90)
+                                                : _random.Next(90, 180));
+
+                        transform.DORotate(addedRotation, 0.5f, RotateMode.LocalAxisAdd);
+                        await UniTask.Delay(500);
+                    }
+                    else
+                    {
+                        rigidbody.MovePosition(transform.position + transform.forward * 55f * Time.deltaTime);
+                    }
                 }
-
-                rigidbody.MovePosition(transform.position + transform.forward * 55f * Time.deltaTime);
 
                 await UniTask.NextFrame();
             }

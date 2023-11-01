@@ -171,9 +171,9 @@ namespace MaxFluff.Prototypes
             _player.Rigidbody.velocity =
                 new Vector3(horizontalVelocity.x, verticalVelocity, horizontalVelocity.y);
 
-            _player.Transform.Rotate(0f, _mouseInputService.MouseDelta.x * Time.deltaTime * 150f, 0f);
+            _player.Transform.Rotate(0f, _mouseInputService.MouseDelta.x, 0f);
             var transformRotation = _mainCamera.Transform.localRotation.eulerAngles +
-                                    new Vector3(-_mouseInputService.MouseDelta.y * Time.deltaTime * 150f, 0f, 0f);
+                                    new Vector3(-_mouseInputService.MouseDelta.y, 0f, 0f);
 
             transformRotation.x = transformRotation.x > 180
                 ? Mathf.Clamp(transformRotation.x, 280, 361)
