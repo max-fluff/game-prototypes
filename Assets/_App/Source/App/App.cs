@@ -76,7 +76,8 @@ namespace MaxFluff.Prototypes
                     PlatformerContext _ => new PlatformerState(),
                     PuzzleContext _ => new PuzzleState(),
                     RaceContext _ => new RaceState(),
-                    DialogsContext _ => new DialogsState()
+                    DialogsContext _ => new DialogsState(),
+                    TycoonContext _ => new TycoonState()
                 });
             }
             else
