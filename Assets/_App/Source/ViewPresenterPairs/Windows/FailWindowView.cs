@@ -1,6 +1,4 @@
-﻿using Lean.Gui;
-
-namespace MaxFluff.Prototypes
+﻿namespace MaxFluff.Prototypes
 {
     public class FailWindowView : WindowViewBase
     {

@@ -21,7 +21,7 @@ namespace MaxFluff.Prototypes
 
         public WindowsOrganizerPresenter(WindowsOrganizerView view) : base(view)
         {
-            view.BlockerButton.OnClick.AddListener(CloseByBlocker);
+            //view.BlockerButton.OnClick.AddListener(CloseByBlocker);
 
             CloseKey = view.WindowCloser.CloseKey;
             view.WindowCloser.CloseKey = KeyCode.None;
