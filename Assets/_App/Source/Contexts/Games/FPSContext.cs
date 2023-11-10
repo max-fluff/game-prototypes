@@ -11,5 +11,7 @@ namespace MaxFluff.Prototypes
         public FailWindowView FailWindow;
         public WinWindowView WinWindow;
         public CoreVisualView CoreVisualView;
+        public MobileRetranslatorPowerUpView MobileRetranslatorPowerUpView;
+        public MobileRetranslatorVisualizerView MobileRetranslatorVisualizerView;
     }
 }

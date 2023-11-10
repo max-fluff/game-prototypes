@@ -20,6 +20,8 @@ namespace MaxFluff.Prototypes
                 c.AddSingleton(_context.FailWindow);
                 c.AddSingleton(_context.WinWindow);
                 c.AddSingleton(_context.CoreVisualView);
+                c.AddSingleton(_context.MobileRetranslatorPowerUpView);
+                c.AddSingleton(_context.MobileRetranslatorVisualizerView);
 
                 c.AddSingleton<FPSPlayerPresenter>();
                 c.AddSingleton<CameraPresenter>();
@@ -28,6 +30,8 @@ namespace MaxFluff.Prototypes
                 c.AddSingleton<FailWindowPresenter>();
                 c.AddSingleton<WinWindowPresenter>();
                 c.AddSingleton<CoreVisualPresenter>();
+                c.AddSingleton<MobileRetranslatorPowerUpPresenter>();
+                c.AddSingleton<MobileRetranslatorVisualizerPresenter>();
 
                 c.AddSingleton<GameQuitBinding>();
                 c.AddSingleton<FPSPlayerInputBinding>();

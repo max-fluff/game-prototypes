@@ -8,6 +8,7 @@ namespace MaxFluff.Prototypes
     {
         public LineRenderer ShotLinePrefab;
         public ZapRetranslatorArea Area;
+        public bool DestroyedOnZap;
 
         private bool _wasZappedInCurrentFrame;
 
@@ -45,6 +46,9 @@ namespace MaxFluff.Prototypes
         {
             await UniTask.Yield(PlayerLoopTiming.LastPostLateUpdate);
             _wasZappedInCurrentFrame = false;
+
+            if (DestroyedOnZap)
+                Destroy(gameObject);
         }
 
         private void VisualizeShot(Vector3 hit)

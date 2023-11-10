@@ -12,6 +12,8 @@ namespace MaxFluff.Prototypes
         private readonly KeyboardInputService _keyboardInput;
         private readonly MouseInputService _mouseInputService;
         private readonly RaycastPresenter _raycastPresenter;
+        private readonly MobileRetranslatorPowerUpPresenter _mobileRetranslatorPowerUpPresenter;
+        private readonly MobileRetranslatorVisualizerPresenter _mobileRetranslatorVisualizerPresenter;
         private readonly GravityService _gravityService;
         private readonly CursorService _cursorService;
 
@@ -23,11 +25,15 @@ namespace MaxFluff.Prototypes
         private Transform _floorTransform;
         private Vector3 _cachedFloorPosition;
 
+        private bool _canThrowRetranslators;
+
         public FPSPlayerInputBinding(
             FPSPlayerPresenter player,
             CameraPresenter mainCamera,
             WindowsOrganizerPresenter windowsOrganizerPresenter,
             RaycastPresenter raycastPresenter,
+            MobileRetranslatorPowerUpPresenter mobileRetranslatorPowerUpPresenter,
+            MobileRetranslatorVisualizerPresenter mobileRetranslatorVisualizerPresenter,
             KeyboardInputService keyboardInput,
             MouseInputService mouseInputService,
             GravityService gravityService,
@@ -39,6 +45,8 @@ namespace MaxFluff.Prototypes
             _keyboardInput = keyboardInput;
             _mouseInputService = mouseInputService;
             _raycastPresenter = raycastPresenter;
+            _mobileRetranslatorPowerUpPresenter = mobileRetranslatorPowerUpPresenter;
+            _mobileRetranslatorVisualizerPresenter = mobileRetranslatorVisualizerPresenter;
             _gravityService = gravityService;
             _cursorService = cursorService;
         }
@@ -77,6 +85,7 @@ namespace MaxFluff.Prototypes
         public void Init()
         {
             _keyboardInput.OnInputAction += ProcessInputAction;
+            _mobileRetranslatorPowerUpPresenter.OnPowerUpCollected += EnableThrowingRetranslators;
 
             _gravityService.GravityPower *= 20;
 
@@ -84,6 +93,12 @@ namespace MaxFluff.Prototypes
             _ignoreLightLayer = LayerMask.GetMask("IgnoreLight");
 
             _cursorService.IsCursorVisible = false;
+        }
+
+        private void EnableThrowingRetranslators()
+        {
+            _canThrowRetranslators = true;
+            _mobileRetranslatorVisualizerPresenter.Enable();
         }
 
         private void ProcessInputAction(Actions action)
@@ -96,7 +111,16 @@ namespace MaxFluff.Prototypes
                 case Actions.Space:
                     ProcessJumpAction();
                     break;
+                case Actions.G:
+                    ThrowRetranslator();
+                    break;
             }
+        }
+
+        private void ThrowRetranslator()
+        {
+            if (_canThrowRetranslators)
+                _player.SpawnMobileRetranslator();
         }
 
         private void MakeJump(float value)

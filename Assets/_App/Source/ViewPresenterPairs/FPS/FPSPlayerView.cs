@@ -10,6 +10,7 @@ namespace MaxFluff.Prototypes.FPS
         public Rigidbody Rigidbody;
         public Transform ShotSource;
         public LineRenderer ShotLinePrefab;
+        public GameObject MobileRetranslator;
 
         public event Action<float> OnDamaged;
 
@@ -52,6 +53,13 @@ namespace MaxFluff.Prototypes.FPS
         {
             await UniTask.Delay(500);
             Object.Destroy(shotGameObject);
+        }
+
+        public void SpawnMobileRetranslator()
+        {
+            Object.Instantiate(_view.MobileRetranslator,
+                _view.transform.position + _view.transform.forward * 3 + _view.transform.up * 2,
+                _view.transform.rotation);
         }
     }
 }
