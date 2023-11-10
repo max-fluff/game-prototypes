@@ -1,5 +1,6 @@
 ﻿using System;
 using EPOOutline;
+using TMPro;
 using UnityEngine;
 using Random = System.Random;
 
@@ -15,12 +16,15 @@ namespace MaxFluff.Prototypes
         public GameObject VacantGO;
 
         public Outlinable Outlinable;
+
+        public TextMeshProUGUI PlayersAmount;
     }
 
     public class GamePlacePresenter : PresenterBase<GamePlaceView>, IProfitablePresenter
     {
         private readonly Random _random;
         private StationState _state;
+        int _maxValue;
 
         public event Action<GamePlacePresenter> OnClicked;
 
@@ -57,6 +61,17 @@ namespace MaxFluff.Prototypes
                 _view.PokerGO.SetActive(value == StationState.Poker);
                 _view.BlackJackGO.SetActive(value == StationState.BlackJack);
                 _view.VacantGO.SetActive(value == StationState.None);
+
+                _maxValue = State switch
+                {
+                    StationState.None => 0,
+                    StationState.Poker => 10,
+                    StationState.BlackJack => 8,
+                    StationState.Roulette => 20,
+                    _ => throw new ArgumentOutOfRangeException()
+                };
+
+                _view.PlayersAmount.SetText($"{0}\\{_maxValue}");
             }
         }
 
@@ -91,16 +106,21 @@ namespace MaxFluff.Prototypes
                 _ => throw new ArgumentOutOfRangeException()
             };
 
-        public int GetPlayerAmount(float popularity) =>
-            State switch
+        public int GetPlayerAmount(float popularity)
+        {
+            var amount = State switch
             {
                 StationState.None => 0,
-                StationState.Poker => _random.Next(2, (int) Mathf.Clamp(_random.Next(2, 6) + popularity * 10, 2, 10)),
-                StationState.BlackJack => _random.Next(2, (int) Mathf.Clamp(_random.Next(2, 6) + popularity * 8, 2, 8)),
-                StationState.Roulette => _random.Next(1,
-                    (int) Mathf.Clamp(_random.Next(1, 8) + popularity * 20, 1, 20)),
+                StationState.Poker => (int)Mathf.Clamp(_random.Next(2, 5) + popularity * 7, 2, 10),
+                StationState.BlackJack => (int)Mathf.Clamp(_random.Next(2, 4) + popularity * 6, 2, 8),
+                StationState.Roulette => (int)Mathf.Clamp(_random.Next(1, 10) + popularity * 15, 1, 20),
                 _ => throw new ArgumentOutOfRangeException()
             };
+
+            _view.PlayersAmount.SetText($"{amount}\\{_maxValue}");
+
+            return amount;
+        }
 
         public float GetPopularityIncrease() =>
             State switch

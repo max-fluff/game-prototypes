@@ -233,11 +233,11 @@ namespace MaxFluff.Prototypes
                     var chance = _rand.NextDouble();
                     int personMoneyAmount;
                     if (chance < chanceOfRich)
-                        personMoneyAmount = _rand.Next(10000, 20000);
+                        personMoneyAmount = _rand.Next(7000, 15000);
                     else if (chance < chanceOfAverage)
-                        personMoneyAmount = _rand.Next(5000, 10001);
+                        personMoneyAmount = _rand.Next(3000, 7001);
                     else
-                        personMoneyAmount = _rand.Next(2000, 5000);
+                        personMoneyAmount = _rand.Next(1000, 3000);
 
                     profit += (int) (personMoneyAmount * profitable.GetPercentOfIncome());
                 }

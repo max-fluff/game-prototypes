@@ -1,5 +1,6 @@
 ﻿using System;
 using EPOOutline;
+using TMPro;
 using UnityEngine;
 using Random = System.Random;
 
@@ -11,12 +12,15 @@ namespace MaxFluff.Prototypes
         public GameObject VisualsGO;
         public GameObject BuyVisualsGO;
         public Outlinable Outlinable;
+
+        public TextMeshProUGUI PlayersAmount;
     }
 
     public class BarPresenter : PresenterBase<BarView>, IProfitablePresenter
     {
         private readonly Random _random;
         private bool _isBought;
+        private int _maxValue;
         public event Action<BarPresenter> OnClicked;
 
         public bool IsBought
@@ -27,6 +31,8 @@ namespace MaxFluff.Prototypes
                 _isBought = value;
                 _view.VisualsGO.SetActive(value);
                 _view.BuyVisualsGO.SetActive(!value);
+                _maxValue = value ? 15 : 0;
+                _view.PlayersAmount.SetText($"{0}\\{_maxValue}");
             }
         }
 
@@ -58,8 +64,12 @@ namespace MaxFluff.Prototypes
 
         public int GetMaintenancePrice() => IsBought ? 500 : 0;
 
-        public int GetPlayerAmount(float popularity) =>
-            IsBought ? (int) Mathf.Clamp(_random.Next(1, 6) + popularity * 15, 1, 15) : 0;
+        public int GetPlayerAmount(float popularity)
+        {
+            var amount = IsBought ? (int)Mathf.Clamp(_random.Next(1, 7) + popularity * 12, 1, 15) : 0;
+            _view.PlayersAmount.SetText($"{amount}\\{_maxValue}");
+            return amount;
+        }
 
         public float GetPopularityIncrease() => IsBought ? 0.2f : 0;
 
