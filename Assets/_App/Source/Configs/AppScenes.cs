@@ -13,5 +13,6 @@ namespace MaxFluff.Prototypes
         public SceneReference RaceScene;
         public SceneReference DialogsScene;
         public SceneReference FPSScene;
+        public SceneReference TycoonState;
     }
 }
