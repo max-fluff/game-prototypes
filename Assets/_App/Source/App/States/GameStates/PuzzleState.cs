@@ -24,12 +24,12 @@ namespace MaxFluff.Prototypes
                 c.AddSingleton<SendButtonPresenter>();
                 c.AddSingleton<PhonePresenter>();
 
-                c.AddSingleton<PlatformerQuitBinding>();
+                c.AddSingleton<GameQuitBinding>();
                 c.AddSingleton<PuzzleSheetBinding>();
                 c.AddSingleton<PuzzlePhoneBinding>();
             });
 
-            _core.Add(_container.Resolve<PlatformerQuitBinding>())
+            _core.Add(_container.Resolve<GameQuitBinding>())
                 .Add(_container.Resolve<PuzzleSheetBinding>())
                 .Add(_container.Resolve<PuzzlePhoneBinding>());
 

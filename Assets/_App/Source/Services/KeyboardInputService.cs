@@ -75,6 +75,9 @@ namespace MaxFluff.Prototypes
             if (Input.GetKeyDown(KeyCode.R))
                 return Actions.R;
 
+            if (Input.GetKeyDown(KeyCode.G))
+                return Actions.G;
+
             return Actions.None;
         }
     }
@@ -92,6 +95,7 @@ namespace MaxFluff.Prototypes
         Selection3,
         Shift,
         R,
+        G,
         None
     }
 }

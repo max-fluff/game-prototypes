@@ -6,6 +6,17 @@ namespace MaxFluff.Prototypes
     public sealed class CursorService
     {
         private readonly CursorsConfig _cursorsConfig;
+        private bool _isVisible;
+
+        public bool IsCursorVisible
+        {
+            get => _isVisible;
+            set
+            {
+                Cursor.visible = _isVisible = value;
+                Cursor.lockState = value ? CursorLockMode.None : CursorLockMode.Locked;
+            }
+        }
 
         public CursorService(CursorsConfig cursorsConfig)
         {

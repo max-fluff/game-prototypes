@@ -22,7 +22,7 @@ namespace MaxFluff.Prototypes
 
         public bool GraphicRaycast(Vector2 position, out List<RaycastResult> results)
         {
-            var pointerData = new PointerEventData(_view.EventSystem) {position = position};
+            var pointerData = new PointerEventData(_view.EventSystem) { position = position };
 
             results = new List<RaycastResult>();
             _view.UIRaycaster.Raycast(pointerData, results);
@@ -32,6 +32,9 @@ namespace MaxFluff.Prototypes
 
         public bool PhysicsRaycast(Ray ray, out RaycastHit hit, float distance, int layerMask) =>
             Physics.Raycast(ray, out hit, distance, layerMask);
+
+        public bool PhysicsRaycast(Ray ray, out RaycastHit hit, float distance) =>
+            Physics.Raycast(ray, out hit, distance);
 
         public bool PhysicsRaycast(Ray ray, out RaycastHit hit) =>
             Physics.Raycast(ray, out hit, Mathf.Infinity);

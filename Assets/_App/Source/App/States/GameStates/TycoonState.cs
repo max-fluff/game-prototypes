@@ -32,12 +32,12 @@ namespace MaxFluff.Prototypes
                 c.AddSingleton<FailWindowPresenter>();
                 c.AddSingleton<ContinueButtonPresenter>();
 
-                c.AddSingleton<PlatformerQuitBinding>();
+                c.AddSingleton<GameQuitBinding>();
                 c.AddSingleton<TycoonBinding>();
                 c.AddSingleton<TycoonWindowsBinding>();
             });
 
-            _core.Add(_container.Resolve<PlatformerQuitBinding>())
+            _core.Add(_container.Resolve<GameQuitBinding>())
                 .Add(_container.Resolve<TycoonBinding>())
                 .Add(_container.Resolve<TycoonWindowsBinding>());
 
