@@ -20,6 +20,7 @@ namespace MaxFluff.Prototypes
                 c.AddSingleton(_context.TimeResultWindowView);
                 c.AddSingleton(_context.BordersView);
                 c.AddSingleton(_context.FinishView);
+                c.AddSingleton(_context.LevelGeneratorView);
 
                 c.AddSingleton<CameraPresenter>();
                 c.AddSingleton<RacePlayerPresenter>();
@@ -29,6 +30,7 @@ namespace MaxFluff.Prototypes
                 c.AddSingleton<TimeResultWindowPresenter>();
                 c.AddSingleton<BordersPresenter>();
                 c.AddSingleton<FinishPresenter>();
+                c.AddSingleton<LevelGeneratorPresenter>();
 
                 c.AddSingleton<GameQuitBinding>();
                 c.AddSingleton<RacePlayerCameraBinding>();

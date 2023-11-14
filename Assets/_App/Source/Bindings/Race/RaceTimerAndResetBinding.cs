@@ -11,6 +11,7 @@ namespace MaxFluff.Prototypes
         private readonly FinishPresenter _finishPresenter;
         private readonly KeyboardInputService _keyboardInputService;
         private readonly GravityService _gravityService;
+        private readonly LevelGeneratorPresenter _levelGeneratorPresenter;
         private readonly RacePlayerPresenter _player;
 
         private float _timerInSeconds;
@@ -23,6 +24,7 @@ namespace MaxFluff.Prototypes
             FinishPresenter finishPresenter,
             KeyboardInputService keyboardInputService,
             GravityService gravityService,
+            LevelGeneratorPresenter levelGeneratorPresenter,
             RacePlayerPresenter player)
         {
             _timeResultWindow = timeResultWindow;
@@ -32,6 +34,7 @@ namespace MaxFluff.Prototypes
             _finishPresenter = finishPresenter;
             _keyboardInputService = keyboardInputService;
             _gravityService = gravityService;
+            _levelGeneratorPresenter = levelGeneratorPresenter;
             _player = player;
         }
 
@@ -66,6 +69,7 @@ namespace MaxFluff.Prototypes
             {
                 ResetPlayer();
                 ResetTimer();
+                _levelGeneratorPresenter.GenerateLevel();
             }
         }
 

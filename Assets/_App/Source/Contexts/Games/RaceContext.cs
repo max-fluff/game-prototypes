@@ -10,5 +10,6 @@
         public TimeResultWindowView TimeResultWindowView;
         public BordersView BordersView;
         public FinishView FinishView;
+        public LevelGeneratorView LevelGeneratorView;
     }
 }
