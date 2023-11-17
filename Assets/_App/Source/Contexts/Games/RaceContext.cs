@@ -6,6 +6,7 @@
         public RacePlayerView Player;
         public GravityChangeVisualizerView GravityChangeVisualizer;
         public TimerVisualizerView TimerVisualizerView;
+        public DistanceVisualizerView DistanceVisualizerView;
         public FailWindowView FailWindowView;
         public TimeResultWindowView TimeResultWindowView;
         public BordersView BordersView;

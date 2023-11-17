@@ -3,6 +3,7 @@ using UnityEngine.Events;
 
 namespace MaxFluff.Prototypes
 {
+    [RequireComponent(typeof(BoxCollider))]
     public class PlayerTrigger : MonoBehaviour
     {
         public UnityEvent OnPlayerEnter;
