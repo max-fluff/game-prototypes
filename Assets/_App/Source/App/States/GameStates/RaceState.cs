@@ -16,19 +16,23 @@ namespace MaxFluff.Prototypes
                 c.AddSingleton(_context.Player);
                 c.AddSingleton(_context.GravityChangeVisualizer);
                 c.AddSingleton(_context.TimerVisualizerView);
+                c.AddSingleton(_context.DistanceVisualizerView);
                 c.AddSingleton(_context.FailWindowView);
                 c.AddSingleton(_context.TimeResultWindowView);
                 c.AddSingleton(_context.BordersView);
                 c.AddSingleton(_context.FinishView);
+                c.AddSingleton(_context.LevelGeneratorView);
 
                 c.AddSingleton<CameraPresenter>();
                 c.AddSingleton<RacePlayerPresenter>();
                 c.AddSingleton<GravityChangeVisualizerPresenter>();
                 c.AddSingleton<TimerVisualizerPresenter>();
+                c.AddSingleton<DistanceVisualizerPresenter>();
                 c.AddSingleton<FailWindowPresenter>();
                 c.AddSingleton<TimeResultWindowPresenter>();
                 c.AddSingleton<BordersPresenter>();
                 c.AddSingleton<FinishPresenter>();
+                c.AddSingleton<LevelGeneratorPresenter>();
 
                 c.AddSingleton<GameQuitBinding>();
                 c.AddSingleton<RacePlayerCameraBinding>();

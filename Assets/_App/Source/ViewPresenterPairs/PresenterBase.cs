@@ -17,7 +17,7 @@ namespace MaxFluff.Prototypes
 
         private void SendOnDestroy() => OnDestroy?.Invoke();
 
-        public void Destroy()
+        public virtual void Destroy()
         {
             Object.Destroy(_view.gameObject);
         }

@@ -6,6 +6,7 @@ namespace MaxFluff.Prototypes
     public class TimeResultWindowView : WindowViewBase
     {
         public TextMeshProUGUI Result;
+        public TextMeshProUGUI Distance;
     }
 
     public class TimeResultWindowPresenter : WindowPresenterBase<TimeResultWindowView>
@@ -23,6 +24,10 @@ namespace MaxFluff.Prototypes
         {
             var time = TimeSpan.FromSeconds(seconds);
             _view.Result.SetText($"{time.Minutes}:{time.Seconds}:{time.Milliseconds}");
+        }
+        public void SetDistance(int distance)
+        {
+            _view.Distance.SetText($"{distance}");
         }
     }
 }
