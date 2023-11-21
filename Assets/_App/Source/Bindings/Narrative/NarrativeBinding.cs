@@ -8,22 +8,25 @@ namespace MaxFluff.Prototypes
         private readonly StampPresenter _stampPresenter;
         private readonly RaycastPresenter _raycastPresenter;
         private readonly CameraPresenter _cameraPresenter;
+        private readonly SheetStackPresenter _sheetStackPresenter;
         private readonly MouseInputService _mouseInputService;
 
         private IDraggableObjectPresenter _currentDrag;
-        private bool _freshlyPressed = false;
+        private bool _freshlyPressed;
 
         public NarrativeBinding(
             PenPresenter penPresenter,
             StampPresenter stampPresenter,
             RaycastPresenter raycastPresenter,
             CameraPresenter cameraPresenter,
+            SheetStackPresenter sheetStackPresenter,
             MouseInputService mouseInputService)
         {
             _penPresenter = penPresenter;
             _stampPresenter = stampPresenter;
             _raycastPresenter = raycastPresenter;
             _cameraPresenter = cameraPresenter;
+            _sheetStackPresenter = sheetStackPresenter;
             _mouseInputService = mouseInputService;
         }
 
@@ -45,15 +48,35 @@ namespace MaxFluff.Prototypes
             if (_currentDrag != null)
             {
                 var mousePos = _mouseInputService.Position;
-                if (_raycastPresenter.DefaultRaycast(_cameraPresenter.Camera.ScreenPointToRay(mousePos), out var hit,
-                        1000f)) _currentDrag.SetPosition(new Vector3(hit.point.x, 0f, hit.point.z));
+                var wasHit = _raycastPresenter.DefaultRaycast(_cameraPresenter.Camera.ScreenPointToRay(mousePos),
+                    out var hit,
+                    1000f);
+                if (wasHit) _currentDrag.SetPosition(new Vector3(hit.point.x, 0f, hit.point.z));
 
                 if (_freshlyPressed)
                     _freshlyPressed = false;
-                else if (_mouseInputService.LeftClicked)
+                else if (_mouseInputService.Up)
                 {
-                    _currentDrag.Stamp();
-                    _currentDrag = null;
+                    if (wasHit && hit.collider.GetComponentInParent<SingleSheetView>())
+                    {
+                        _currentDrag.Stamp();
+                        switch (_currentDrag)
+                        {
+                            case StampPresenter _:
+                                _sheetStackPresenter.SetStampOnCurrent();
+                                break;
+                            case PenPresenter _:
+                                _sheetStackPresenter.SetSignatureOnCurrent();
+                                break;
+                        }
+
+                        _currentDrag = null;
+                    }
+                    else
+                    {
+                        _currentDrag.Reset();
+                        _currentDrag = null;
+                    }
                 }
             }
         }

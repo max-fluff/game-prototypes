@@ -15,10 +15,12 @@ namespace MaxFluff.Prototypes
                 c.AddSingleton(_context.PenView);
                 c.AddSingleton(_context.StampView);
                 c.AddSingleton(_context.MainCameraView);
+                c.AddSingleton(_context.SheetStackView);
 
                 c.AddSingleton<PenPresenter>();
                 c.AddSingleton<StampPresenter>();
                 c.AddSingleton<CameraPresenter>();
+                c.AddSingleton<SheetStackPresenter>();
 
                 c.AddSingleton<NarrativeBinding>();
                 c.AddSingleton<GameQuitBinding>();

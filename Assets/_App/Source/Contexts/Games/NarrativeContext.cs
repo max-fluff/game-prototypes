@@ -5,5 +5,6 @@
         public CameraView MainCameraView;
         public PenView PenView;
         public StampView StampView;
+        public SheetStackView SheetStackView;
     }
 }
