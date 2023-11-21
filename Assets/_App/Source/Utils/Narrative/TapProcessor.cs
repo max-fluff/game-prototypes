@@ -3,7 +3,7 @@ using Lean.Transition;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace MaxFluff.Prototypes.Narrative
+namespace MaxFluff.Prototypes
 {
     public class TapProcessor : MonoBehaviour
     {
@@ -14,7 +14,10 @@ namespace MaxFluff.Prototypes.Narrative
 
         private void OnMouseDown()
         {
-            tapSound?.PlayOneShot(tapSound.clip);
+            if (enabled == false) return;
+            
+            if (tapSound)
+                tapSound.PlayOneShot(tapSound.clip);
             OnTappped?.Invoke();
             transitionEffects.ForEach(te => te.Begin());
         }
