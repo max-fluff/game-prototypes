@@ -11,6 +11,8 @@ namespace MaxFluff.Prototypes
         public LeanPlayer PutAwayTransition;
         public AudioSource Audio;
         public float PuttingAwayLength;
+        public GameObject Signature;
+        public GameObject Stamp;
     }
 
     public class SingleSheetPresenter : PresenterBase<SingleSheetView>
@@ -44,12 +46,30 @@ namespace MaxFluff.Prototypes
         private async UniTask DelayedDestroy()
         {
             _isDestroyed = true;
-            await UniTask.Delay((int)(_view.PuttingAwayLength * 1000));
+            await UniTask.Delay((int) (_view.PuttingAwayLength * 1000));
             Destroy();
         }
 
-        public void SetStamp() => _gotStamp = true;
+        public void SetStamp(Vector3 worldPos)
+        {
+            var stampParent = _view.Stamp.transform.parent;
+            var localPos = stampParent.InverseTransformPoint(worldPos);
+            localPos.z = 0f;
+            var newStamp = Object.Instantiate(_view.Stamp, stampParent);
+            newStamp.transform.localPosition = localPos;
+            newStamp.SetActive(true);
+            _gotStamp = true;
+        }
 
-        public void SetSignature() => _gotSignature = true;
+        public void SetSignature(Vector3 worldPos)
+        {
+            var signatureParent = _view.Signature.transform.parent;
+            var localPos = signatureParent.InverseTransformPoint(worldPos);
+            localPos.z = 0f;
+            var newSignature = Object.Instantiate(_view.Signature, signatureParent);
+            newSignature.transform.localPosition = localPos;
+            newSignature.SetActive(true);
+            _gotSignature = true;
+        }
     }
 }

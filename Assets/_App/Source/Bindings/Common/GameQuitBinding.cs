@@ -39,6 +39,7 @@ namespace MaxFluff.Prototypes
         private void ShowCursor()
         {
             _cursorState = _cursorService.IsCursorVisible;
+            Debug.Log(_cursorState);
             _cursorService.IsCursorVisible = true;
         }
 

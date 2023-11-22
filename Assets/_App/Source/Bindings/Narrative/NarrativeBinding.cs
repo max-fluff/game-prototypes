@@ -9,6 +9,7 @@ namespace MaxFluff.Prototypes
         private readonly RaycastPresenter _raycastPresenter;
         private readonly CameraPresenter _cameraPresenter;
         private readonly SheetStackPresenter _sheetStackPresenter;
+        private readonly CursorService _cursorService;
         private readonly MouseInputService _mouseInputService;
 
         private IDraggableObjectPresenter _currentDrag;
@@ -20,6 +21,7 @@ namespace MaxFluff.Prototypes
             RaycastPresenter raycastPresenter,
             CameraPresenter cameraPresenter,
             SheetStackPresenter sheetStackPresenter,
+            CursorService cursorService,
             MouseInputService mouseInputService)
         {
             _penPresenter = penPresenter;
@@ -27,11 +29,13 @@ namespace MaxFluff.Prototypes
             _raycastPresenter = raycastPresenter;
             _cameraPresenter = cameraPresenter;
             _sheetStackPresenter = sheetStackPresenter;
+            _cursorService = cursorService;
             _mouseInputService = mouseInputService;
         }
 
         public void Init()
         {
+            _cursorService.IsCursorVisible = true;
             _penPresenter.OnStartDrag += OnDragStarted;
             _stampPresenter.OnStartDrag += OnDragStarted;
         }
@@ -63,10 +67,10 @@ namespace MaxFluff.Prototypes
                         switch (_currentDrag)
                         {
                             case StampPresenter _:
-                                _sheetStackPresenter.SetStampOnCurrent();
+                                _sheetStackPresenter.SetStampOnCurrent(hit.point);
                                 break;
                             case PenPresenter _:
-                                _sheetStackPresenter.SetSignatureOnCurrent();
+                                _sheetStackPresenter.SetSignatureOnCurrent(hit.point);
                                 break;
                         }
 
