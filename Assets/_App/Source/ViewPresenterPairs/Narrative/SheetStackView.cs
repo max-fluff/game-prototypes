@@ -63,9 +63,9 @@ namespace MaxFluff.Prototypes
             var timer = 0f;
             var maxTime = 3;
 
+            _view.Muffler.audioMixer.SetFloat("Muffle", MaxMuffle);
             while (timer < maxTime)
             {
-                _view.Muffler.audioMixer.SetFloat("Muffle",  MinMuffle - (MinMuffle - MaxMuffle) * timer / maxTime);
                 _view.ScalableBlurConfig.Radius = MaxRadius * 2 * timer / maxTime;
 
                 await UniTask.Yield();
@@ -86,10 +86,14 @@ namespace MaxFluff.Prototypes
 
                 timer = 0f;
 
-                while (timer < duration)
+                _view.Muffler.audioMixer.SetFloat("Muffle",
+                    MinMuffle - (MinMuffle - MaxMuffle) * _currentSheetsCount / MaxSheets);
+
+                while (timer < duration && (_currentSheetsCount < MaxSheets))
                 {
                     _view.ScalableBlurConfig.Radius = MaxRadius * timer / duration * _currentSheetsCount / MaxSheets;
-                    _view.Muffler.audioMixer.SetFloat("Muffle",  MinMuffle - (MinMuffle - MaxMuffle) * timer / duration * _currentSheetsCount / MaxSheets);
+                    _view.Muffler.audioMixer.SetFloat("Muffle",
+                        MinMuffle - (MinMuffle - MaxMuffle) * timer / duration * _currentSheetsCount / MaxSheets);
 
                     await UniTask.Yield();
                     timer += Time.deltaTime;
@@ -101,12 +105,13 @@ namespace MaxFluff.Prototypes
 
                 timer = 0f;
 
-                while (timer < duration)
+                while (timer < duration && (_currentSheetsCount < MaxSheets))
                 {
                     _view.ScalableBlurConfig.Radius =
                         MaxRadius * (duration - timer) / duration * _currentSheetsCount / MaxSheets;
                     _view.Muffler.audioMixer.SetFloat("Muffle",
-                        MinMuffle - (MinMuffle - MaxMuffle) * (duration - timer) / duration * _currentSheetsCount / MaxSheets) ;
+                        MinMuffle - (MinMuffle - MaxMuffle) * (duration - timer) / duration * _currentSheetsCount /
+                        MaxSheets);
 
 
                     await UniTask.Yield();
