@@ -1,4 +1,4 @@
-﻿using MaxFluff.Prototypes.TBS;
+﻿using MaxFluff.Prototypes._App.Source.Bindings;
 using Omega.IoC;
 
 namespace MaxFluff.Prototypes
@@ -18,9 +18,11 @@ namespace MaxFluff.Prototypes
                 c.AddSingleton<BoardPresenter>();
 
                 c.AddSingleton<GameQuitBinding>();
+                c.AddSingleton<TBSBinding>();
             });
             _core
-                .Add(_container.Resolve<GameQuitBinding>());
+                .Add(_container.Resolve<GameQuitBinding>())
+                .Add(_container.Resolve<TBSBinding>());
 
 
             _core.Init();

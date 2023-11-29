@@ -1,6 +1,4 @@
-﻿using MaxFluff.Prototypes.TBS;
-
-namespace MaxFluff.Prototypes
+﻿namespace MaxFluff.Prototypes
 {
     public class TBSContext : GameContext
     {
