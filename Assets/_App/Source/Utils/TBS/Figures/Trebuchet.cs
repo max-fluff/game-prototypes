@@ -1,12 +1,10 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
+using System.Linq;
 
 namespace MaxFluff.Prototypes
 {
     public class Trebuchet : Figure
     {
-        public override FigureType FigureType => FigureType.Trebuchet;
-
         private readonly List<(int x, int y)> _highlightableOnAction = new List<(int x, int y)>
         {
             (-3, 0),
@@ -19,6 +17,6 @@ namespace MaxFluff.Prototypes
             (0, -4),
         };
         
-        public override List<(int x, int y)> GetHighlightedAction() => _highlightableOnAction;
+        public override List<(int x, int y)> GetHighlightedAction() => _highlightableOnAction.ToList();
     }
 }

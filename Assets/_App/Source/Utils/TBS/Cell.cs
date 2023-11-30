@@ -8,18 +8,42 @@ namespace MaxFluff.Prototypes
     public class Cell : MonoBehaviour
     {
         [SerializeField] private GameObject _barricadePrefab;
+        [SerializeField] private GameObject _spearPrefab;
         private Figure _figureOccupied;
 
         private LeanButton _button;
 
         private GameObject _barricade;
+        private GameObject _spear;
+        private Side _spearSide;
+
+        private State _lastState;
+
+        public Side SpearSide
+        {
+            set
+            {
+                _spearSide = value;
+
+                if (_spear)
+                {
+                    _spear.GetComponentInChildren<Graphic>().color = value switch
+                    {
+                        Side.White => new Color(1f, 0.9176471f, 0.7686275f, 0.6f),
+                        Side.Black => new Color(0.254717f, 0.2133886f, 0.1477839f, 0.6f),
+                        _ => _spear.GetComponentInChildren<Graphic>().color
+                    };
+                }
+            }
+            get => _spearSide;
+        }
 
         private State _state;
 
         public event Action OnCellClicked;
 
         private Color _initColor;
-        private Color _highlightedColor = new Color(0.9058824f, 0.8235294f, 0.7333333f, 1f);
+        private readonly Color _highlightedColor = new Color(0.9058824f, 0.8235294f, 0.7333333f, 1f);
         private Graphic _graphic;
 
         public State State
@@ -63,8 +87,23 @@ namespace MaxFluff.Prototypes
 
                     break;
                 }
+
+                case State.Spear:
+                {
+                    if (_spear)
+                    {
+                        Destroy(_spear);
+                        _spear = null;
+                    }
+
+                    break;
+                }
             }
+
+            _lastState = state;
         }
+
+        public void ToLastState() => State = _lastState;
 
         private void ProcessStateOn(State state)
         {
@@ -73,6 +112,13 @@ namespace MaxFluff.Prototypes
                 case State.Barricade:
                 {
                     _barricade = Instantiate(_barricadePrefab, transform);
+
+                    break;
+                }
+                case State.Spear:
+                {
+                    _spear = Instantiate(_spearPrefab, transform);
+                    SpearSide = SpearSide;
 
                     break;
                 }
@@ -106,6 +152,7 @@ namespace MaxFluff.Prototypes
     {
         None,
         Figure,
-        Barricade
+        Barricade,
+        Spear
     }
 }

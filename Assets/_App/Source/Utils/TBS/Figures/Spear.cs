@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
+using System.Linq;
 
 namespace MaxFluff.Prototypes
 {
     public class Spear : Figure
     {
-        public override FigureType FigureType => FigureType.Spear;
+        public List<(int x, int y)> usedCells = new List<(int x, int y)>();
 
         private readonly List<(int x, int y)> _highlightableOnAction = new List<(int x, int y)>
         {
@@ -19,6 +19,15 @@ namespace MaxFluff.Prototypes
             (0, -2),
         };
 
-        public override List<(int x, int y)> GetHighlightedAction() => _highlightableOnAction;
+        public override List<(int x, int y)> GetHighlightedAction()
+        {
+            return isStationed ? new List<(int x, int y)> { (0, 0) } : _highlightableOnAction.ToList();
+        }
+
+        public override List<(int x, int y)> GetHighlightedMovement() =>
+            isStationed ? null : base.GetHighlightedMovement();
+
+
+        public bool isStationed;
     }
 }

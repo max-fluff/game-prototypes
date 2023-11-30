@@ -20,7 +20,7 @@
 
         private void ProcessInput(Actions action)
         {
-            if (action == Actions.Space)
+            if (action == Actions.Shift)
             {
                 if (_board.State == BoardState.Moving)
                     _board.State = BoardState.Action;

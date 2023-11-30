@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace MaxFluff.Prototypes
 {
@@ -12,8 +13,8 @@ namespace MaxFluff.Prototypes
             (0, -2),
         };
 
-        public override FigureType FigureType => FigureType.Horse;
+        public override bool ApplyActionForOtherSide => true;
 
-        public override List<(int x, int y)> GetHighlightedAction() => _highlightableOnAction;
+        public override List<(int x, int y)> GetHighlightedAction() => _highlightableOnAction.ToList();
     }
 }
