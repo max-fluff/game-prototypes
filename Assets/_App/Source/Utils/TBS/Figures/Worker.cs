@@ -14,6 +14,8 @@ namespace MaxFluff.Prototypes
         };
 
         public override bool ApplyActionForOtherSide => false;
+        public override int MoveTime => 5;
+        public override int ActionTime => 5;
 
         public override List<(int x, int y)> GetHighlightedAction() => _highlightableOnAction.ToList();
     }

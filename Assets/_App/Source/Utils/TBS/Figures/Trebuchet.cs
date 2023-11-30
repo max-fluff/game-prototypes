@@ -16,7 +16,9 @@ namespace MaxFluff.Prototypes
             (0, -3),
             (0, -4),
         };
-        
+
+        public override int MoveTime => 10;
+        public override int ActionTime => 15;
         public override List<(int x, int y)> GetHighlightedAction() => _highlightableOnAction.ToList();
     }
 }

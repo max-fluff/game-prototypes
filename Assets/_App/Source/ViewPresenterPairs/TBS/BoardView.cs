@@ -1,21 +1,36 @@
 ﻿using System;
+using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
+using Lean.Gui;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace MaxFluff.Prototypes
 {
     public class BoardView : ViewBase
     {
+        public GameObject Cover;
+        public Slider Progress;
+        public LeanButton SkipStepButton;
+        public LeanButton SkipSkipToEndButton;
     }
 
     public class BoardPresenter : PresenterBase<BoardView>
     {
         private readonly Cell[,] _cells = new Cell[7, 10];
 
-        public event Action<int, int, Cell> OnCellClicked;
+        private readonly List<Figure> _figures = new List<Figure>();
+
+        private readonly Dictionary<int, List<RecordedAction>> _recordedActions =
+            new Dictionary<int, List<RecordedAction>>();
 
         private BoardState _state;
 
         private Side _currentSide;
+
+        private int _step;
+        private const int STEP_TIME_MILLISECONDS = 100;
+        private const int MAX_STEP = 30;
 
         private (int x, int y) _currentFigurePos;
 
@@ -71,6 +86,81 @@ namespace MaxFluff.Prototypes
             }
         }
 
+        public int Step
+        {
+            get => _step;
+            set
+            {
+                _view.Progress.value = value;
+                _step = value;
+            }
+        }
+
+        public async UniTask SkipSteps(int turnsAmount)
+        {
+            var figure = CurrentFigure;
+            _view.Cover.SetActive(true);
+            for (var i = 0; i < turnsAmount; i++)
+            {
+                Step++;
+
+                if (_recordedActions.TryGetValue(Step, out var action))
+                    foreach (var recordedAction in action)
+                    {
+                        RestoreAction(recordedAction);
+                        await UniTask.Delay(STEP_TIME_MILLISECONDS);
+                    }
+                else
+                    await UniTask.Delay(STEP_TIME_MILLISECONDS);
+
+                if (!figure || figure.IsKilled)
+                {
+                    turnsAmount = MAX_STEP - Step;
+                }
+
+                if (Step == MAX_STEP - 1)
+                {
+                    await NextTurn();
+                    break;
+                }
+            }
+
+            _view.Cover.SetActive(false);
+        }
+
+        private async UniTask NextTurn()
+        {
+            foreach (var cell in _cells)
+            {
+                cell.State = Prototypes.State.None;
+            }
+
+            foreach (var figure in _figures)
+            {
+                figure.Reset();
+                _cells[figure.InitPos.x, figure.InitPos.y].FigureOccupied = figure;
+                _cells[figure.InitPos.x, figure.InitPos.y].State = Prototypes.State.Figure;
+            }
+
+            Step = 0;
+
+            if (_recordedActions.TryGetValue(Step, out var action))
+                foreach (var recordedAction in action)
+                {
+                    RestoreAction(recordedAction);
+                    await UniTask.Delay(STEP_TIME_MILLISECONDS);
+                }
+
+            _currentSide = _currentSide switch
+            {
+                Side.Black => Side.White,
+                Side.White => Side.Black,
+                _ => _currentSide
+            };
+
+            State = BoardState.SelectingFigure;
+        }
+
         private void HighlightAvailablePieces()
         {
             foreach (var cell in _cells)
@@ -82,8 +172,10 @@ namespace MaxFluff.Prototypes
         public BoardPresenter(BoardView view) : base(view)
         {
             InitBoard();
-
             State = BoardState.SelectingFigure;
+
+            _view.SkipStepButton.OnClick.AddListener(() => SkipSteps(1).Forget());
+            _view.SkipSkipToEndButton.OnClick.AddListener(() => SkipSteps(MAX_STEP - Step).Forget());
         }
 
         private void InitBoard()
@@ -97,16 +189,24 @@ namespace MaxFluff.Prototypes
                     _cells[i, j] = cell;
                     var j1 = j;
                     var i1 = i;
-                    cell.OnCellClicked += () =>
+                    cell.OnCellClicked += () => { ProcessCellClick(i1, j1, cell); };
+
+                    var figure = cell.GetComponentInChildren<Figure>();
+                    if (figure)
                     {
-                        ProcessCellClick(i1, j1, cell);
-                        OnCellClicked?.Invoke(i1, j1, cell);
-                    };
+                        figure.InitPos = (i, j);
+                        _figures.Add(figure);
+                    }
                 }
             }
         }
 
         private void ProcessCellClick(int x, int y, Cell cell)
+        {
+            ProcessCellClickAsync(x, y, cell).Forget();
+        }
+
+        private async UniTask ProcessCellClickAsync(int x, int y, Cell cell)
         {
             switch (_state)
             {
@@ -132,14 +232,27 @@ namespace MaxFluff.Prototypes
                             cellToHighlight.y + _currentFigurePos.y);
                     }
 
-                    if (cellsToHighlight.Contains((x, y)) && GetCellAvailability(x, y, true))
+                    if (cellsToHighlight.Contains((x, y)) && GetCellAvailability(CurrentFigure, x, y, true))
                     {
-                        MoveToNewPlace(x, y);
+                        var currentFigure = CurrentFigure;
+                        var success = MoveToNewPlace(currentFigure, x, y);
+                        _currentFigurePos = (x, y);
 
-                        if (_state != BoardState.Moving) break;
+                        RecordAction(currentFigure, RecordedActionType.Moving, x, y);
+
+                        if (!success)
+                        {
+                            await SkipSteps(MAX_STEP - Step);
+                            return;
+                        }
 
                         foreach (var cellFromList in _cells)
                             cellFromList.Highlight(false);
+
+                        var cachedSide1 = _currentSide;
+                        await SkipSteps(CurrentFigure.MoveTime);
+                        if (_currentSide != cachedSide1)
+                            return;
 
                         HighLightCellsToMove(x, y);
                     }
@@ -151,7 +264,12 @@ namespace MaxFluff.Prototypes
                     break;
 
                 case BoardState.Action:
-                    Action(x, y);
+                    var cachedSide2 = _currentSide;
+
+                    await Action(x, y);
+
+                    if (_currentSide != cachedSide2)
+                        return;
 
                     break;
                 default:
@@ -159,32 +277,33 @@ namespace MaxFluff.Prototypes
             }
         }
 
-        private void MoveToNewPlace(int x, int y)
+        private bool MoveToNewPlace(Figure figure, int x, int y)
         {
+            var (figX, figY) = GetFigureCoord(figure);
+
             if (_cells[x, y].State == Prototypes.State.Figure || _cells[x, y].State == Prototypes.State.Spear)
             {
-                _cells[_currentFigurePos.x, _currentFigurePos.y].FigureOccupied.Kill();
-                _cells[_currentFigurePos.x, _currentFigurePos.y].ToLastState();
-
-                State = BoardState.SelectingFigure; //todo fix
+                figure.Kill();
+                _cells[figX, figY].ToLastState();
 
                 if (_cells[x, y].State == Prototypes.State.Figure &&
-                    _cells[x, y].FigureOccupied.Side != _currentSide)
+                    _cells[x, y].FigureOccupied.Side != figure.Side)
                 {
                     _cells[x, y].FigureOccupied.Kill();
                     _cells[x, y].ToLastState();
                 }
 
-                return;
+                return false;
             }
 
             _cells[x, y].State = Prototypes.State.Figure;
-            _cells[x, y].FigureOccupied = CurrentFigure;
-            _cells[_currentFigurePos.x, _currentFigurePos.y].ToLastState();
-            _currentFigurePos = (x, y);
+            _cells[x, y].FigureOccupied = figure;
+            _cells[figX, figY].ToLastState();
+
+            return true;
         }
 
-        private void Action(int x, int y)
+        private async UniTask Action(int x, int y)
         {
             var cellsToHighlight = CurrentFigure.GetHighlightedAction();
             for (var index = 0; index < cellsToHighlight.Count; index++)
@@ -193,14 +312,23 @@ namespace MaxFluff.Prototypes
                 cellsToHighlight[index] = (cell.x + _currentFigurePos.x, cell.y + _currentFigurePos.y);
             }
 
-            if (GetCellAvailability(x, y, CurrentFigure.ApplyActionForOtherSide) &&
+            if (GetCellAvailability(CurrentFigure, x, y, CurrentFigure.ApplyActionForOtherSide) &&
                 cellsToHighlight.Contains((x, y)))
             {
                 switch (CurrentFigure)
                 {
                     case Horse horse:
 
-                        MoveToNewPlace(x, y);
+                        var moved = MoveToNewPlace(horse, x, y);
+                        _currentFigurePos = (x, y);
+
+                        RecordAction(horse, RecordedActionType.Moving, x, y);
+
+                        if (!moved)
+                        {
+                            await SkipSteps(MAX_STEP - Step);
+                            return;
+                        }
 
                         break;
                     case Spear spear:
@@ -225,33 +353,20 @@ namespace MaxFluff.Prototypes
                                 {
                                     var newX = (x + _currentFigurePos.x) / 2;
                                     var newY = (y + _currentFigurePos.y) / 2;
-                                    if (GetCellAvailability(newX, newY, CurrentFigure.ApplyActionForOtherSide))
-                                    {
-                                        MakeCellSpeared(spear, newX, newY);
-
-                                        if (GetCellAvailability(x, y, CurrentFigure.ApplyActionForOtherSide))
-                                            MakeCellSpeared(spear, x, y);
-                                    }
+                                    if (ProcessSpearCell(newX, newY, x, y, spear))
+                                        RecordAction(spear, RecordedActionType.Action, x, y);
                                     else
-                                    {
                                         return;
-                                    }
                                 }
                                 else
                                 {
-                                    if (GetCellAvailability(x, y, CurrentFigure.ApplyActionForOtherSide))
-                                    {
-                                        MakeCellSpeared(spear, x, y);
+                                    var newX = x + x - _currentFigurePos.x;
+                                    var newY = y + y - _currentFigurePos.y;
 
-                                        var newX = x + x - _currentFigurePos.x;
-                                        var newY = y + y - _currentFigurePos.y;
-                                        if (GetCellAvailability(newX, newY, CurrentFigure.ApplyActionForOtherSide))
-                                            MakeCellSpeared(spear, newX, newY);
-                                    }
+                                    if (ProcessSpearCell(x, y, newX, newY, spear))
+                                        RecordAction(spear, RecordedActionType.Action, x, y);
                                     else
-                                    {
                                         return;
-                                    }
                                 }
 
                                 spear.isStationed = !spear.isStationed;
@@ -261,8 +376,10 @@ namespace MaxFluff.Prototypes
                         break;
                     case Trebuchet trebuchet:
 
-                        if (GetCellAvailability(x, y, CurrentFigure.ApplyActionForOtherSide))
+                        if (GetCellAvailability(CurrentFigure, x, y, CurrentFigure.ApplyActionForOtherSide))
                         {
+                            RecordAction(trebuchet, RecordedActionType.Action, x, y);
+
                             if (_cells[x, y].State == Prototypes.State.Barricade)
                                 _cells[x, y].State = Prototypes.State.None;
 
@@ -275,8 +392,10 @@ namespace MaxFluff.Prototypes
 
                         break;
                     case Worker worker:
-                        if (GetCellAvailability(x, y, CurrentFigure.ApplyActionForOtherSide))
+                        if (GetCellAvailability(CurrentFigure, x, y, CurrentFigure.ApplyActionForOtherSide))
                         {
+                            RecordAction(worker, RecordedActionType.Action, x, y);
+
                             _cells[x, y].State = Prototypes.State.Barricade;
                         }
 
@@ -286,11 +405,36 @@ namespace MaxFluff.Prototypes
             else
                 return;
 
+            var cachedSide2 = _currentSide;
+
+            await SkipSteps(CurrentFigure.ActionTime);
+
+            if (_currentSide != cachedSide2)
+                return;
+
             foreach (var cellFromList in _cells)
                 cellFromList.Highlight(false);
+
             ProcessSelection(_currentFigurePos.x, _currentFigurePos.y,
                 _cells[_currentFigurePos.x, _currentFigurePos.y]);
             State = BoardState.Moving;
+        }
+
+        private bool ProcessSpearCell(int x1, int y1, int x2, int y2, Spear spear)
+        {
+            if (GetCellAvailability(spear, x1, y1, spear.ApplyActionForOtherSide))
+            {
+                MakeCellSpeared(spear, x1, y1);
+
+                if (GetCellAvailability(spear, x2, y2, spear.ApplyActionForOtherSide))
+                    MakeCellSpeared(spear, x2, y2);
+            }
+            else
+            {
+                return false;
+            }
+
+            return true;
         }
 
         private void MakeCellSpeared(Spear spear, int x, int y)
@@ -342,7 +486,7 @@ namespace MaxFluff.Prototypes
 
             foreach (var cellToHighlight in cellsToHighlight)
             {
-                if (GetCellAvailability(cellToHighlight.x, cellToHighlight.y, true))
+                if (GetCellAvailability(CurrentFigure, cellToHighlight.x, cellToHighlight.y, true))
                 {
                     _cells[cellToHighlight.x, cellToHighlight.y].Highlight(true);
                 }
@@ -363,7 +507,7 @@ namespace MaxFluff.Prototypes
 
             foreach (var cellToHighlight in cellsToHighlight)
             {
-                if (GetCellAvailability(cellToHighlight.x, cellToHighlight.y, highlightForOtherSide))
+                if (GetCellAvailability(CurrentFigure, cellToHighlight.x, cellToHighlight.y, highlightForOtherSide))
                 {
                     _cells[cellToHighlight.x, cellToHighlight.y].Highlight(true);
                 }
@@ -372,7 +516,7 @@ namespace MaxFluff.Prototypes
             return true;
         }
 
-        private bool GetCellAvailability(int x, int y, bool highlightOverOtherSide)
+        private bool GetCellAvailability(Figure figure, int x, int y, bool highlightOverOtherSide)
         {
             if (x <= _cells.GetUpperBound(0)
                 && x >= _cells.GetLowerBound(0)
@@ -383,14 +527,154 @@ namespace MaxFluff.Prototypes
 
                 if ((cell.State != Prototypes.State.Figure && cell.State != Prototypes.State.Barricade)
                     || highlightOverOtherSide && cell.State == Prototypes.State.Figure &&
-                    cell.FigureOccupied.Side != _currentSide
-                    || (cell.State == Prototypes.State.Figure && cell.FigureOccupied == CurrentFigure))
+                    cell.FigureOccupied.Side != figure.Side
+                    || (cell.State == Prototypes.State.Figure && cell.FigureOccupied == figure))
                 {
                     return true;
                 }
             }
 
             return false;
+        }
+
+        private void RecordAction(Figure figure, RecordedActionType type, int x, int y)
+        {
+            if (!_recordedActions.ContainsKey(Step))
+                _recordedActions.Add(Step, new List<RecordedAction>());
+
+            _recordedActions[Step].Add(new RecordedAction
+            {
+                Type = type,
+                Coordinate = (x, y),
+                Figure = figure
+            });
+
+            figure.MadeAnyAction = true;
+        }
+
+        private void RestoreAction(RecordedAction action)
+        {
+            if (!action.Figure.AllActionsSuccessful)
+                return;
+
+            var (figX, figY) = GetFigureCoord(action.Figure);
+
+            var x = action.Coordinate.x;
+            var y = action.Coordinate.y;
+            var actionSuccessful = true;
+
+            switch (action.Type)
+            {
+                case RecordedActionType.Moving:
+                    var cellsToHighlight = action.Figure.GetHighlightedMovement();
+
+                    for (var index = 0; index < cellsToHighlight.Count; index++)
+                    {
+                        var cellToHighlight = cellsToHighlight[index];
+                        cellsToHighlight[index] = (cellToHighlight.x + figX,
+                            cellToHighlight.y + figY);
+                    }
+
+                    if (cellsToHighlight.Contains((x, y)) &&
+                        GetCellAvailability(action.Figure, x, y, true))
+                        actionSuccessful = MoveToNewPlace(action.Figure, x, y);
+                    else
+                        actionSuccessful = false;
+
+                    break;
+                case RecordedActionType.Action:
+                    switch (action.Figure)
+                    {
+                        case Spear spear:
+                            if (spear.isStationed)
+                            {
+                                foreach (var usedCell in spear.usedCells)
+                                {
+                                    _cells[usedCell.x, usedCell.y].State = Prototypes.State.None;
+                                }
+
+                                spear.isStationed = !spear.isStationed;
+
+                                spear.usedCells.Clear();
+                            }
+                            else
+                            {
+                                if (_cells[x, y].State == Prototypes.State.None ||
+                                    _cells[x, y].State == Prototypes.State.Figure)
+                                {
+                                    if (Mathf.Abs(x - figX) > 1 ||
+                                        Mathf.Abs(y - figY) > 1)
+                                    {
+                                        var newX = (x + figX) / 2;
+                                        var newY = (y + figY) / 2;
+                                        if (!ProcessSpearCell(newX, newY, x, y, spear))
+                                        {
+                                            actionSuccessful = false;
+                                            break;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        var newX = x + x - figX;
+                                        var newY = y + y - figY;
+
+                                        if (!ProcessSpearCell(x, y, newX, newY, spear))
+                                        {
+                                            actionSuccessful = false;
+                                            break;
+                                        }
+                                    }
+
+                                    spear.isStationed = !spear.isStationed;
+                                }
+                            }
+
+                            break;
+                        case Trebuchet trebuchet:
+                            if (GetCellAvailability(action.Figure, x, y, action.Figure.ApplyActionForOtherSide))
+                            {
+                                if (_cells[x, y].State == Prototypes.State.Barricade)
+                                    _cells[x, y].State = Prototypes.State.None;
+
+                                if (_cells[x, y].State == Prototypes.State.Figure)
+                                {
+                                    _cells[x, y].FigureOccupied.Kill();
+                                    _cells[x, y].ToLastState();
+                                }
+                            }
+                            else
+                                actionSuccessful = false;
+
+                            break;
+                        case Worker worker:
+                            if (GetCellAvailability(action.Figure, x, y, action.Figure.ApplyActionForOtherSide))
+                                _cells[x, y].State = Prototypes.State.Barricade;
+                            else
+                                actionSuccessful = false;
+
+                            break;
+                    }
+
+                    action.Figure.AllActionsSuccessful = actionSuccessful;
+
+                    break;
+            }
+        }
+
+        private (int x, int y) GetFigureCoord(Figure figure)
+        {
+            for (var i = 0; i <= _cells.GetUpperBound(0); i++)
+            {
+                for (var j = 0; j <= _cells.GetUpperBound(1); j++)
+                {
+                    if (_cells[i, j].FigureOccupied == figure)
+                    {
+                        return (i, j);
+                    }
+                }
+            }
+
+            return (-1, -1);
         }
     }
 
@@ -400,5 +684,18 @@ namespace MaxFluff.Prototypes
         SelectingFigure,
         Moving,
         Action
+    }
+
+    public enum RecordedActionType
+    {
+        Moving,
+        Action
+    }
+
+    internal struct RecordedAction
+    {
+        public Figure Figure;
+        public RecordedActionType Type;
+        public (int x, int y) Coordinate;
     }
 }

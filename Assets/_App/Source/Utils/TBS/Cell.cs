@@ -69,7 +69,8 @@ namespace MaxFluff.Prototypes
             set
             {
                 _figureOccupied = value;
-                _figureOccupied.transform.SetParent(transform, false);
+                if (_figureOccupied)
+                    _figureOccupied.transform.SetParent(transform, false);
             }
         }
 
@@ -96,6 +97,12 @@ namespace MaxFluff.Prototypes
                         _spear = null;
                     }
 
+                    break;
+                }
+
+                case State.Figure:
+                {
+                    FigureOccupied = null;
                     break;
                 }
             }

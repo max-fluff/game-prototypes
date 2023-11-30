@@ -6,6 +6,12 @@ namespace MaxFluff.Prototypes
 {
     public abstract class Figure : MonoBehaviour
     {
+        public bool AllActionsSuccessful = true;
+        public bool MadeAnyAction;
+        public bool IsKilled;
+
+        public (int x, int y) InitPos;
+
         private readonly List<(int x, int y)> _highlightableOnMovement = new List<(int x, int y)>
         {
             (-1, 0),
@@ -15,6 +21,8 @@ namespace MaxFluff.Prototypes
         };
 
         public virtual bool ApplyActionForOtherSide => true;
+        public abstract int MoveTime { get; }
+        public abstract int ActionTime { get; }
 
         public Side Side;
         [SerializeField] private GameObject Outline;
@@ -28,22 +36,22 @@ namespace MaxFluff.Prototypes
         {
             gameObject.SetActive(true);
             SetSelected(false);
+            MadeAnyAction = false;
+            AllActionsSuccessful = true;
+            IsKilled = false;
         }
 
         public void Kill()
         {
+            AllActionsSuccessful = false;
             gameObject.SetActive(false);
+            IsKilled = true;
+            OnKill();
         }
-    }
 
-    public enum FigureType
-    {
-        Rook,
-        Horse,
-        Spear,
-        Worker,
-        Trebuchet,
-        King
+        protected virtual void OnKill()
+        {
+        }
     }
 
     public enum Side
