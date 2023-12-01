@@ -9,6 +9,7 @@ namespace MaxFluff.Prototypes
         public bool AllActionsSuccessful = true;
         public bool MadeAnyAction;
         public bool IsKilled;
+        private bool _isKilledInit = false;
 
         public (int x, int y) InitPos;
 
@@ -34,11 +35,20 @@ namespace MaxFluff.Prototypes
 
         public virtual void Reset()
         {
-            gameObject.SetActive(true);
+            IsKilled = _isKilledInit;
+            gameObject.SetActive(!IsKilled);
             SetSelected(false);
-            MadeAnyAction = false;
             AllActionsSuccessful = true;
-            IsKilled = false;
+        }
+
+        public void RecordInitState()
+        {
+            _isKilledInit = IsKilled;
+            OnRecordInitState();
+        }
+
+        protected virtual void OnRecordInitState()
+        {
         }
 
         public void Kill()

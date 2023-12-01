@@ -7,6 +7,7 @@ namespace MaxFluff.Prototypes
     public class Spear : Figure
     {
         public List<(int x, int y)> usedCells = new List<(int x, int y)>();
+        private List<(int x, int y)> _usedCellsInit = new List<(int x, int y)>();
 
         public event Action<Spear> OnKilled;
 
@@ -35,12 +36,19 @@ namespace MaxFluff.Prototypes
 
 
         public bool isStationed;
+        private bool _isStationedInit = false;
 
         public override void Reset()
         {
             base.Reset();
-            isStationed = false;
-            usedCells.Clear();
+            isStationed = _isStationedInit;
+            usedCells = _usedCellsInit.ToList();
+        }
+
+        protected override void OnRecordInitState()
+        {
+            _isStationedInit = isStationed;
+            _usedCellsInit = usedCells.ToList();
         }
 
         protected override void OnKill() => OnKilled?.Invoke(this);

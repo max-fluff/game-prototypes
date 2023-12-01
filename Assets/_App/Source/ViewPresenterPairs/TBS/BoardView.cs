@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Cysharp.Threading.Tasks;
 using Lean.Gui;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,6 +15,7 @@ namespace MaxFluff.Prototypes
         public Slider Progress;
         public LeanButton SkipStepButton;
         public LeanButton SkipSkipToEndButton;
+        public TextMeshProUGUI StageNumber;
     }
 
     public class BoardPresenter : PresenterBase<BoardView>
@@ -29,6 +32,7 @@ namespace MaxFluff.Prototypes
         private Side _currentSide;
 
         private int _step;
+        private int _stage = 0;
         private const int STEP_TIME_MILLISECONDS = 100;
         private const int MAX_STEP = 30;
 
@@ -65,13 +69,22 @@ namespace MaxFluff.Prototypes
                 {
                     case BoardState.SelectingFigure:
                         HighlightAvailablePieces();
+
+                        _view.SkipStepButton.gameObject.SetActive(false);
+                        _view.SkipSkipToEndButton.gameObject.SetActive(false);
+
                         _currentFigurePos = (-1, -1);
+
                         break;
                     case BoardState.Moving:
                         foreach (var cellFromList in _cells)
                             cellFromList.Highlight(false);
 
+                        _view.SkipStepButton.gameObject.SetActive(true);
+                        _view.SkipSkipToEndButton.gameObject.SetActive(true);
+
                         HighLightCellsToMove(_currentFigurePos.x, _currentFigurePos.y);
+                        CurrentFigure.MadeAnyAction = true;
                         break;
                     case BoardState.Action:
                         foreach (var cellFromList in _cells)
@@ -80,13 +93,11 @@ namespace MaxFluff.Prototypes
                         if (!HighLightCellsToAction(_currentFigurePos.x, _currentFigurePos.y,
                                 CurrentFigure.ApplyActionForOtherSide)) State = cachedState;
                         break;
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(value), value, null);
                 }
             }
         }
 
-        public int Step
+        private int Step
         {
             get => _step;
             set
@@ -131,10 +142,11 @@ namespace MaxFluff.Prototypes
 
         private async UniTask NextTurn()
         {
+            if (_figures.All(f => f.MadeAnyAction))
+                NextStage();
+
             foreach (var cell in _cells)
-            {
-                cell.State = Prototypes.State.None;
-            }
+                cell.RestoreInitState();
 
             foreach (var figure in _figures)
             {
@@ -159,14 +171,32 @@ namespace MaxFluff.Prototypes
                 _ => _currentSide
             };
 
+            State = BoardState.None;
             State = BoardState.SelectingFigure;
+        }
+
+        private void NextStage()
+        {
+            _recordedActions.Clear();
+            foreach (var figure in _figures)
+            {
+                figure.MadeAnyAction = false;
+                figure.InitPos = GetFigureCoord(figure);
+            }
+
+            foreach (var cell in _cells)
+                cell.RecordInitState();
+
+            _stage++;
+            _view.StageNumber.SetText(_stage.ToString());
         }
 
         private void HighlightAvailablePieces()
         {
             foreach (var cell in _cells)
             {
-                cell.Highlight(cell.State == Prototypes.State.Figure && cell.FigureOccupied.Side == _currentSide);
+                cell.Highlight(cell.State == Prototypes.State.Figure && cell.FigureOccupied.Side == _currentSide &&
+                               !cell.FigureOccupied.MadeAnyAction);
             }
         }
 
@@ -195,11 +225,12 @@ namespace MaxFluff.Prototypes
                     var figure = cell.GetComponentInChildren<Figure>();
                     if (figure)
                     {
-                        figure.InitPos = (i, j);
                         _figures.Add(figure);
                     }
                 }
             }
+
+            NextStage();
         }
 
         private void ProcessCellClick(int x, int y, Cell cell)
@@ -222,7 +253,6 @@ namespace MaxFluff.Prototypes
 
                     if (cellsToHighlight is null)
                     {
-                        ProcessSelection(x, y, cell);
                         return;
                     }
 
@@ -259,7 +289,7 @@ namespace MaxFluff.Prototypes
                     }
                     else
                     {
-                        ProcessSelection(x, y, cell);
+                        return;
                     }
 
                     break;
@@ -323,7 +353,7 @@ namespace MaxFluff.Prototypes
                         var moved = MoveToNewPlace(horse, x, y);
                         _currentFigurePos = (x, y);
 
-                        RecordAction(horse, RecordedActionType.Moving, x, y);
+                        RecordAction(horse, RecordedActionType.Action, x, y);
 
                         if (!moved)
                         {
@@ -448,15 +478,15 @@ namespace MaxFluff.Prototypes
             }
 
             _cells[x, y].State = Prototypes.State.Spear;
-            _cells[x, y].SpearSide = _currentSide;
+            _cells[x, y].SpearSide = spear.Side;
 
             spear.usedCells.Add((x, y));
         }
 
         private void ProcessSelection(int x, int y, Cell cell)
         {
-            //todo: check if moved
-            if (cell.State == Prototypes.State.Figure && cell.FigureOccupied.Side == _currentSide)
+            if (cell.State == Prototypes.State.Figure && cell.FigureOccupied.Side == _currentSide &&
+                !cell.FigureOccupied.MadeAnyAction)
             {
                 foreach (var cellFromList in _cells)
                     cellFromList.Highlight(false);
@@ -549,8 +579,6 @@ namespace MaxFluff.Prototypes
                 Coordinate = (x, y),
                 Figure = figure
             });
-
-            figure.MadeAnyAction = true;
         }
 
         private void RestoreAction(RecordedAction action)
@@ -577,15 +605,30 @@ namespace MaxFluff.Prototypes
                     }
 
                     if (cellsToHighlight.Contains((x, y)) &&
-                        GetCellAvailability(action.Figure, x, y, true))
+                        GetCellAvailability(action.Figure, x, y, action.Figure.ApplyActionForOtherSide))
                         actionSuccessful = MoveToNewPlace(action.Figure, x, y);
                     else
                         actionSuccessful = false;
-
                     break;
                 case RecordedActionType.Action:
                     switch (action.Figure)
                     {
+                        case Horse horse:
+                            var cellsToHighlight1 = action.Figure.GetHighlightedAction();
+
+                            for (var index = 0; index < cellsToHighlight1.Count; index++)
+                            {
+                                var cellToHighlight = cellsToHighlight1[index];
+                                cellsToHighlight1[index] = (cellToHighlight.x + figX,
+                                    cellToHighlight.y + figY);
+                            }
+
+                            if (cellsToHighlight1.Contains((x, y)) &&
+                                GetCellAvailability(action.Figure, x, y, true))
+                                actionSuccessful = MoveToNewPlace(action.Figure, x, y);
+                            else
+                                actionSuccessful = false;
+                            break;
                         case Spear spear:
                             if (spear.isStationed)
                             {
@@ -656,10 +699,10 @@ namespace MaxFluff.Prototypes
                             break;
                     }
 
-                    action.Figure.AllActionsSuccessful = actionSuccessful;
-
                     break;
             }
+
+            action.Figure.AllActionsSuccessful = actionSuccessful;
         }
 
         private (int x, int y) GetFigureCoord(Figure figure)

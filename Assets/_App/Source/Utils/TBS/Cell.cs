@@ -18,6 +18,7 @@ namespace MaxFluff.Prototypes
         private Side _spearSide;
 
         private State _lastState;
+        private State _initState;
 
         public Side SpearSide
         {
@@ -131,6 +132,9 @@ namespace MaxFluff.Prototypes
                 }
             }
         }
+
+        public void RecordInitState() => _initState = State;
+        public void RestoreInitState() => State = _initState;
 
         private void Awake()
         {
