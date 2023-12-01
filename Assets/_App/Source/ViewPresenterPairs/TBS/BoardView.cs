@@ -107,20 +107,23 @@ namespace MaxFluff.Prototypes
             }
         }
 
-        public async UniTask SkipSteps(int turnsAmount)
+        private async UniTask SkipSteps(int turnsAmount, bool checkForNextTurn = true)
         {
             var figure = CurrentFigure;
             _view.Cover.SetActive(true);
+
             for (var i = 0; i < turnsAmount; i++)
             {
                 Step++;
 
                 if (_recordedActions.TryGetValue(Step, out var action))
+                {
                     foreach (var recordedAction in action)
                     {
                         RestoreAction(recordedAction);
                         await UniTask.Delay(STEP_TIME_MILLISECONDS);
                     }
+                }
                 else
                     await UniTask.Delay(STEP_TIME_MILLISECONDS);
 
@@ -130,7 +133,13 @@ namespace MaxFluff.Prototypes
                     i = 0;
                 }
 
-                if (Step == MAX_STEP - 1)
+                foreach (var cell in _cells)
+                {
+                    if (cell.State == Prototypes.State.Explosion)
+                        cell.ToLastState();
+                }
+
+                if (checkForNextTurn && Step == MAX_STEP - 1)
                 {
                     await NextTurn();
                     break;
@@ -143,8 +152,13 @@ namespace MaxFluff.Prototypes
         private async UniTask NextTurn()
         {
             if (_figures.All(f => f.MadeAnyAction))
-                NextStage();
+                await NextStage(false);
 
+            await NextTurnProcess();
+        }
+
+        private async UniTask NextTurnProcess()
+        {
             foreach (var cell in _cells)
                 cell.RestoreInitState();
 
@@ -157,13 +171,6 @@ namespace MaxFluff.Prototypes
 
             Step = 0;
 
-            if (_recordedActions.TryGetValue(Step, out var action))
-                foreach (var recordedAction in action)
-                {
-                    RestoreAction(recordedAction);
-                    await UniTask.Delay(STEP_TIME_MILLISECONDS);
-                }
-
             _currentSide = _currentSide switch
             {
                 Side.Black => Side.White,
@@ -173,15 +180,31 @@ namespace MaxFluff.Prototypes
 
             State = BoardState.None;
             State = BoardState.SelectingFigure;
+
+            await UniTask.Delay(STEP_TIME_MILLISECONDS);
+
+            if (_recordedActions.TryGetValue(Step, out var action))
+                foreach (var recordedAction in action)
+                {
+                    RestoreAction(recordedAction);
+                    await UniTask.Delay(STEP_TIME_MILLISECONDS);
+                }
         }
 
-        private void NextStage()
+        private async UniTask NextStage(bool needsRecap)
         {
+            if (needsRecap)
+            {
+                await NextTurnProcess();
+                await SkipSteps(MAX_STEP - Step, false);
+            }
+
             _recordedActions.Clear();
             foreach (var figure in _figures)
             {
                 figure.MadeAnyAction = false;
                 figure.InitPos = GetFigureCoord(figure);
+                figure.RecordInitState();
             }
 
             foreach (var cell in _cells)
@@ -226,11 +249,23 @@ namespace MaxFluff.Prototypes
                     if (figure)
                     {
                         _figures.Add(figure);
+                        if (figure is Spear spear)
+                        {
+                            spear.OnKilled += RestoreSpearedCells;
+                        }
                     }
                 }
             }
 
-            NextStage();
+            NextStage(false).Forget();
+        }
+
+        private void RestoreSpearedCells(Spear spear)
+        {
+            foreach (var usedCell in spear.usedCells)
+                _cells[usedCell.x, usedCell.y].State = Prototypes.State.None;
+
+            spear.usedCells.Clear();
         }
 
         private void ProcessCellClick(int x, int y, Cell cell)
@@ -282,14 +317,10 @@ namespace MaxFluff.Prototypes
 
                         var cachedSide1 = _currentSide;
                         await SkipSteps(CurrentFigure.MoveTime);
-                        if (_currentSide != cachedSide1)
+                        if (_currentSide != cachedSide1 || currentFigure.IsKilled)
                             return;
 
                         HighLightCellsToMove(x, y);
-                    }
-                    else
-                    {
-                        return;
                     }
 
                     break;
@@ -312,7 +343,9 @@ namespace MaxFluff.Prototypes
         {
             var (figX, figY) = GetFigureCoord(figure);
 
-            if (_cells[x, y].State == Prototypes.State.Figure || _cells[x, y].State == Prototypes.State.Spear)
+            if (_cells[x, y].State == Prototypes.State.Figure
+                || _cells[x, y].State == Prototypes.State.Spear && _cells[x, y].SpearSide != figure.Side
+                || _cells[x, y].State == Prototypes.State.Explosion)
             {
                 figure.Kill();
                 _cells[figX, figY].ToLastState();
@@ -415,10 +448,9 @@ namespace MaxFluff.Prototypes
                                 _cells[x, y].State = Prototypes.State.None;
 
                             if (_cells[x, y].State == Prototypes.State.Figure)
-                            {
                                 _cells[x, y].FigureOccupied.Kill();
-                                _cells[x, y].ToLastState();
-                            }
+
+                            _cells[x, y].State = Prototypes.State.Explosion;
                         }
 
                         break;
@@ -438,9 +470,10 @@ namespace MaxFluff.Prototypes
 
             var cachedSide2 = _currentSide;
 
-            await SkipSteps(CurrentFigure.ActionTime);
+            var currentFigure = CurrentFigure;
+            await SkipSteps(currentFigure.ActionTime);
 
-            if (_currentSide != cachedSide2)
+            if (_currentSide != cachedSide2 || currentFigure.IsKilled)
                 return;
 
             foreach (var cellFromList in _cells)
@@ -471,7 +504,7 @@ namespace MaxFluff.Prototypes
         private void MakeCellSpeared(Spear spear, int x, int y)
         {
             if (_cells[x, y].State == Prototypes.State.Figure &&
-                _cells[x, y].FigureOccupied.Side != _currentSide)
+                _cells[x, y].FigureOccupied.Side != spear.Side)
             {
                 _cells[x, y].FigureOccupied.Kill();
                 _cells[x, y].ToLastState();
@@ -556,8 +589,10 @@ namespace MaxFluff.Prototypes
             {
                 var cell = _cells[x, y];
 
-                if ((cell.State != Prototypes.State.Figure && cell.State != Prototypes.State.Barricade)
-                    || highlightOverOtherSide && cell.State == Prototypes.State.Figure &&
+                if (
+                    cell.State != Prototypes.State.Figure && cell.State != Prototypes.State.Barricade
+                    || cell.State == Prototypes.State.Barricade && figure is Trebuchet
+                    || cell.State == Prototypes.State.Figure && highlightOverOtherSide &&
                     cell.FigureOccupied.Side != figure.Side
                     || (cell.State == Prototypes.State.Figure && cell.FigureOccupied == figure))
                 {
@@ -596,6 +631,12 @@ namespace MaxFluff.Prototypes
             {
                 case RecordedActionType.Moving:
                     var cellsToHighlight = action.Figure.GetHighlightedMovement();
+
+                    if (cellsToHighlight is null)
+                    {
+                        actionSuccessful = false;
+                        break;
+                    }
 
                     for (var index = 0; index < cellsToHighlight.Count; index++)
                     {
@@ -681,10 +722,9 @@ namespace MaxFluff.Prototypes
                                     _cells[x, y].State = Prototypes.State.None;
 
                                 if (_cells[x, y].State == Prototypes.State.Figure)
-                                {
                                     _cells[x, y].FigureOccupied.Kill();
-                                    _cells[x, y].ToLastState();
-                                }
+
+                                _cells[x, y].State = Prototypes.State.Explosion;
                             }
                             else
                                 actionSuccessful = false;
@@ -711,7 +751,7 @@ namespace MaxFluff.Prototypes
             {
                 for (var j = 0; j <= _cells.GetUpperBound(1); j++)
                 {
-                    if (_cells[i, j].FigureOccupied == figure)
+                    if (_cells[i, j] == figure.GetComponentInParent<Cell>())
                     {
                         return (i, j);
                     }

@@ -9,12 +9,14 @@ namespace MaxFluff.Prototypes
     {
         [SerializeField] private GameObject _barricadePrefab;
         [SerializeField] private GameObject _spearPrefab;
+        [SerializeField] private GameObject _explosionPrefab;
         private Figure _figureOccupied;
 
         private LeanButton _button;
 
         private GameObject _barricade;
         private GameObject _spear;
+        private GameObject _explosion;
         private Side _spearSide;
 
         private State _lastState;
@@ -57,6 +59,9 @@ namespace MaxFluff.Prototypes
                     return;
 
                 ProcessStateOff(_state);
+
+                if (_state != State.Figure)
+                    _lastState = _state;
 
                 _state = value;
 
@@ -106,12 +111,24 @@ namespace MaxFluff.Prototypes
                     FigureOccupied = null;
                     break;
                 }
-            }
 
-            _lastState = state;
+                case State.Explosion:
+                {
+                    if (_explosion)
+                    {
+                        Destroy(_explosion);
+                        _explosion = null;
+                    }
+
+                    break;
+                }
+            }
         }
 
-        public void ToLastState() => State = _lastState;
+        public void ToLastState()
+        {
+            State = _lastState != State.Figure ? _lastState : State.None;
+        }
 
         private void ProcessStateOn(State state)
         {
@@ -130,11 +147,22 @@ namespace MaxFluff.Prototypes
 
                     break;
                 }
+                case State.Explosion:
+                {
+                    _explosion = Instantiate(_explosionPrefab, transform);
+
+                    break;
+                }
             }
         }
 
         public void RecordInitState() => _initState = State;
-        public void RestoreInitState() => State = _initState;
+
+        public void RestoreInitState()
+        {
+            State = _initState;
+            _lastState = _initState;
+        }
 
         private void Awake()
         {
@@ -164,6 +192,7 @@ namespace MaxFluff.Prototypes
         None,
         Figure,
         Barricade,
-        Spear
+        Spear,
+        Explosion
     }
 }
