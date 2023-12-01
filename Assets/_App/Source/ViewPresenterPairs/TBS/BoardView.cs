@@ -116,6 +116,7 @@ namespace MaxFluff.Prototypes
                 if (!figure || figure.IsKilled)
                 {
                     turnsAmount = MAX_STEP - Step;
+                    i = 0;
                 }
 
                 if (Step == MAX_STEP - 1)
