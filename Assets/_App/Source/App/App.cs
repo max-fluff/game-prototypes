@@ -79,7 +79,8 @@ namespace MaxFluff.Prototypes
                     DialogsContext _ => new DialogsState(),
                     FPSContext _ => new FPSState(),
                     TycoonContext _ => new TycoonState(),
-                    NarrativeContext _ => new NarrativeState()
+                    NarrativeContext _ => new NarrativeState(),
+                    TBSContext _ => new TBSState()
                 });
             }
             else
